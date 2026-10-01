@@ -13,3 +13,9 @@
 .env.*
 *.key
 *.pem
+
+# Generated dependencies
+**/node_modules/
+
+# OpenCode generated package state
+opencode/.config/opencode/package-lock.json
