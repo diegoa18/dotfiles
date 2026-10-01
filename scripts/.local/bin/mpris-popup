@@ -1,0 +1,10 @@
+#!/bin/bash
+
+PID="$(pgrep -f 'quickshell.*mpris-popup.qml' | head -n 1)"
+
+if [ -n "$PID" ]; then
+    kill "$PID"
+else
+    quickshell -p "$HOME/.config/quickshell/mpris-popup.qml" \
+        >/dev/null 2>&1 &
+fi

@@ -1,0 +1,124 @@
+* {
+    font-family: sans-serif;
+    font-size: 13px;
+
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+window#waybar {
+    background: rgba(0, 0, 0, 1);
+    color: #ffffff;
+
+    transition-property: background-color;
+    transition-duration: 180ms;
+}
+
+/* ============================================================
+ * WAYBAR — ESTADO DEL WORKSPACE
+ * ============================================================ */
+
+/* Sin ventanas / solo floating */
+window#waybar.empty,
+window#waybar.floating {
+    background: rgba(8, 8, 8, 0.35);
+}
+
+#custom-user {
+    padding: 0 14px;
+}
+
+#clock {
+    padding: 0 14px;
+}
+
+#network,
+#battery,
+#custom-power {
+    padding: 0 10px;
+}
+
+#custom-power {
+    padding-right: 14px;
+}
+
+#custom-mpris-artist {
+    padding-left: 8px;
+    padding-right: 4px;
+}
+
+#custom-mpris-title {
+    padding-left: 0;
+    padding-right: 10px;
+}
+
+/* ============================================================
+ * POPUPS / MENUS
+ * ============================================================ */
+
+menu {
+    background: rgba(8, 8, 8, 0.35);
+    color: #cad3f5;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+
+    padding: 6px;
+
+    margin-top: 100px;
+}
+
+menuitem {
+    background: transparent;
+    color: #cad3f5;
+
+    border-radius: 7px;
+    padding: 7px 12px;
+}
+
+menuitem:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #cad3f5;
+}
+
+menuitem:active {
+    background: rgba(138, 173, 244, 0.12);
+    color: #8aadf4;
+}
+
+menuitem label {
+    color: #cad3f5;
+}
+
+menuitem:hover label {
+    color: #cad3f5;
+}
+
+menuitem:active label {
+    color: #8aadf4;
+}
+
+separator {
+    background: rgba(255, 255, 255, 0.08);
+    margin: 5px 4px;
+}
+
+/* ============================================================
+ * TOOLTIPS
+ * ============================================================ */
+
+tooltip {
+    background: rgba(8, 8, 8, 0.88);
+    color: #cad3f5;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+
+    padding: 6px 10px;
+}
+
+tooltip label {
+    color: #cad3f5;
+}

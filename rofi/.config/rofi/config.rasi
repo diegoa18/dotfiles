@@ -1,0 +1,197 @@
+configuration {
+    modes: "drun,filebrowser";
+
+    show-icons: true;
+
+    display-drun: "Applications";
+    display-filebrowser: "Files";
+
+    drun-display-format: "{name}";
+}
+
+* {
+    background-color: transparent;
+    text-color: #ffffff;
+
+    border-color: #ffffff18;
+    separatorcolor: #ffffff14;
+
+    selected-normal-background: #ffffff10;
+    selected-normal-foreground: #ffffff;
+
+    active-background: #8aadf41c;
+    active-foreground: #ffffff;
+
+    urgent-background: #ed87961c;
+    urgent-foreground: #ffffff;
+}
+
+/* ============================================================
+   WINDOW
+   ============================================================ */
+
+window {
+    width: 600px;
+
+    background-color: #080808b8;
+
+    border: 1px;
+    border-color: #ffffff18;
+
+    border-radius: 10px;
+
+    padding: 12px;
+}
+
+/* ============================================================
+   MAIN BOX
+   ============================================================ */
+
+mainbox {
+    children: [
+        inputbar,
+        message,
+        listview
+    ];
+}
+
+/* ============================================================
+   INPUT BAR
+   ============================================================ */
+
+inputbar {
+    children: [
+        prompt,
+        entry
+    ];
+
+    spacing: 10px;
+    padding: 8px 10px;
+}
+
+prompt {
+    text-color: #8aadf4;
+}
+
+entry {
+    text-color: #ffffff;
+    cursor-color: #8aadf4;
+}
+
+/* ============================================================
+   LIST
+   ============================================================ */
+
+listview {
+    lines: 10;
+    spacing: 4px;
+    fixed-height: false;
+}
+
+/* ============================================================
+   ELEMENTS
+   ============================================================ */
+
+element {
+    padding: 7px 9px;
+    spacing: 8px;
+    border-radius: 7px;
+
+    background-color: transparent;
+    text-color: #ffffff;
+}
+
+/* ------------------------------------------------------------
+   Normal
+   ------------------------------------------------------------ */
+
+element normal.normal {
+    background-color: transparent;
+    text-color: #ffffff;
+}
+
+element normal.active {
+    background-color: transparent;
+    text-color: #ffffff;
+}
+
+element normal.urgent {
+    background-color: transparent;
+    text-color: #ffffff;
+}
+
+/* ------------------------------------------------------------
+   Alternate
+   ------------------------------------------------------------ */
+
+element alternate.normal {
+    background-color: transparent;
+    text-color: #ffffff;
+}
+
+element alternate.active {
+    background-color: transparent;
+    text-color: #ffffff;
+}
+
+element alternate.urgent {
+    background-color: transparent;
+    text-color: #ffffff;
+}
+
+/* ------------------------------------------------------------
+   Selected
+   ------------------------------------------------------------ */
+
+element selected.normal {
+    background-color: #ffffff10;
+    text-color: #ffffff;
+}
+
+element selected.active {
+    background-color: #8aadf41c;
+    text-color: #ffffff;
+}
+
+element selected.urgent {
+    background-color: #ed87961c;
+    text-color: #ffffff;
+}
+
+/* ============================================================
+   ELEMENT TEXT / ICON
+   ============================================================ */
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+}
+
+element-icon {
+    background-color: transparent;
+    size: 20px;
+}
+
+/* ============================================================
+   MESSAGE
+   ============================================================ */
+
+message {
+    padding: 4px;
+}
+
+textbox {
+    text-color: #8087a2;
+}
+
+/* ============================================================
+   FILEBROWSER
+   ============================================================ */
+
+element-text {
+    text-color: inherit;
+}
+
+element-icon {
+    size: 20px;
+}

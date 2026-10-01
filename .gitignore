@@ -1,0 +1,15 @@
+*.log
+*.tmp
+*.bak
+*~
+.DS_Store
+
+# Machine/local state
+.local/state/
+.cache/
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem

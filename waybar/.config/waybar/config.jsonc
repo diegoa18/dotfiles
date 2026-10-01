@@ -1,0 +1,79 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 24,
+    "spacing": 0,
+
+    "modules-left": [
+        "custom/user",
+        "mpris",
+        "hyprland/window"
+    ],
+
+    "modules-center": [
+        "clock"
+    ],
+
+    "modules-right": [
+        "network",
+        "battery",
+        "custom/power"
+    ],
+
+    "custom/user": {
+        "format": "diego",
+        "tooltip": false
+    },
+
+    "mpris": {
+        "format": "♪ {artist} · {title}",
+        "format-paused": "⏸ {artist} · {title}",
+        "format-stopped": "",
+        "max-length": 70,
+        "ellipsize": "end",
+        "tooltip-format": "{player}\n{artist} · {title}",
+
+        "on-click": "~/.local/bin/mpris-popup",
+        "on-click-right": "playerctl play-pause"
+    },
+
+    "hyprland/window": {
+      "format": ""
+    },
+
+    "clock": {
+        "format": "{:%A %d | %B · %H:%M}",
+        "tooltip": false,
+        "locale": "es_CL",
+        "on-click": "~/.local/bin/calendar-popup"
+    },
+    "network": {
+        "format-wifi": "  {essid}",
+        "format-ethernet": "󰈀  {ifname}",
+        "format-disconnected": "󰖪",
+        "tooltip-format-wifi": "{essid}\n{signalStrength}%\n{ipaddr}",
+        "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
+        "tooltip-format-disconnected": "Sin conexión"
+    },
+
+    "battery": {
+        "format": "{icon} {capacity}%",
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-full": " {capacity}%",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "tooltip-format": "{capacity}%\n{timeTo}\n{power:.1f} W"
+    },
+
+    "custom/power": {
+        "format": "⏻",
+        "tooltip": false,
+        "on-click": "~/.local/bin/power-menu"
+    }
+}

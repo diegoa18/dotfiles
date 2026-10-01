@@ -1,0 +1,17 @@
+#!/bin/bash
+
+case "$1" in
+    up)
+        brightnessctl set 5%+ >/dev/null
+        ;;
+    down)
+        brightnessctl set 5%- >/dev/null
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+
+value=$(brightnessctl -m | awk -F, '{gsub("%","",$4); print $4}')
+
+quickshell ipc call brightness show "$value" >/dev/null

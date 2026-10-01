@@ -1,0 +1,11 @@
+#!/bin/bash
+
+STATE="${XDG_RUNTIME_DIR}/hyprsunset-night"
+
+if [ -f "$STATE" ]; then
+    hyprctl hyprsunset identity
+    rm -f "$STATE"
+else
+    hyprctl hyprsunset temperature 4500
+    touch "$STATE"
+fi

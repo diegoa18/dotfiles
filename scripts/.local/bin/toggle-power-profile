@@ -1,0 +1,20 @@
+#!/bin/bash
+
+current=$(powerprofilesctl get)
+
+case "$current" in
+    performance)
+        powerprofilesctl set power-saver
+        notify-send "Power profile" "Power Saver"
+        ;;
+
+    power-saver)
+        powerprofilesctl set performance
+        notify-send "Power profile" "Performance"
+        ;;
+
+    *)
+        powerprofilesctl set performance
+        notify-send "Power profile" "Performance"
+        ;;
+esac

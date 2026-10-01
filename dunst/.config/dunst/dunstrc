@@ -1,0 +1,77 @@
+[global]
+    monitor = 0
+    follow = mouse
+
+    # Tamaño y posición
+    width = 360
+    height = (0, 120)
+    origin = top-right
+    offset = (18, 42)
+
+    # Capa Wayland
+    layer = overlay
+
+    # Cantidad de notificaciones
+    notification_limit = 5
+    history_length = 20
+
+    # Tipografía
+    font = Sans 10
+
+    # Contenido
+    format = "<b>%s</b>\n%b"
+    markup = full
+    word_wrap = yes
+    ignore_newline = no
+
+    # Espaciado
+    padding = 14
+    horizontal_padding = 14
+    text_icon_padding = 10
+
+    # Bordes
+    frame_width = 1
+    frame_color = "#303030"
+    separator_height = 2
+    separator_color = "#202020"
+    corner_radius = 10
+
+    # Duplicados
+    stack_duplicates = true
+    hide_duplicate_count = false
+
+    # Indicadores
+    show_indicators = false
+
+    # Barra de progreso
+    progress_bar = true
+    progress_bar_height = 6
+    progress_bar_frame_width = 0
+    progress_bar_min_width = 150
+    progress_bar_max_width = 330
+
+    # Mouse
+    mouse_left_click = close_current
+    mouse_middle_click = do_action
+    mouse_right_click = close_all
+
+
+[urgency_low]
+    timeout = 4
+    background = "#08080859"
+    foreground = "#ffffff"
+    frame_color = "#ffffff18"
+
+
+[urgency_normal]
+    timeout = 6
+    background = "#08080859"
+    foreground = "#ffffff"
+    frame_color = "#ffffff20"
+
+
+[urgency_critical]
+    timeout = 8
+    background = "#08080859"
+    foreground = "#ffffff"
+    frame_color = "#ffffff30"

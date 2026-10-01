@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -u
+
+selected="$(
+    cliphist list |
+    rofi \
+        -dmenu \
+        -i \
+        -p "Clipboard"
+)"
+
+[ -z "$selected" ] && exit 0
+
+printf '%s\n' "$selected" |
+    cliphist decode |
+    wl-copy
