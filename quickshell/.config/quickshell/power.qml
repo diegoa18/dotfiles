@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 
 PanelWindow {
     id: root
@@ -22,6 +23,15 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     aboveWindows: true
     focusable: true
+
+    HyprlandFocusGrab {
+        id: focusGrab
+
+        windows: [root]
+        active: true
+
+        onCleared: Qt.quit()
+    }
 
     Keys.onEscapePressed: {
         Qt.quit()

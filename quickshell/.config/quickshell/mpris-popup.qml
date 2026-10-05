@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Services.Mpris
 
 PanelWindow {
@@ -23,6 +24,15 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     aboveWindows: true
     focusable: true
+
+    HyprlandFocusGrab {
+        id: focusGrab
+
+        windows: [root]
+        active: true
+
+        onCleared: Qt.quit()
+    }
 
     property var player: {
         const players = Mpris.players.values
