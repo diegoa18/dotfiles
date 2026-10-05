@@ -2,44 +2,18 @@
 
 set -euo pipefail
 
-ROOT="$(
-    cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." &&
+SCRIPT_DIR="$(
+    cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &&
     pwd -P
 )"
 
+# shellcheck source=lib/common.sh
+. "$SCRIPT_DIR/lib/common.sh"
+
 BACKPORTS_SOURCE="/etc/apt/sources.list.d/dotfiles-backports.sources"
 
-log() {
-    printf '\n==> %s\n' "$1"
-}
 
-die() {
-    printf 'ERROR: %s\n' "$1" >&2
-    exit 1
-}
 
-manifest_packages() {
-    local manifest="$1"
-    local line
-
-    [ -r "$manifest" ] ||
-        die "Manifest not readable: $manifest"
-
-    while IFS= read -r line || [ -n "$line" ]; do
-        # Remove comments.
-        line="${line%%#*}"
-
-        # Trim leading whitespace.
-        line="${line#"${line%%[![:space:]]*}"}"
-
-        # Trim trailing whitespace.
-        line="${line%"${line##*[![:space:]]}"}"
-
-        [ -n "$line" ] || continue
-
-        printf '%s\n' "$line"
-    done < "$manifest"
-}
 
 backports_configured() {
     grep -RqsE \
@@ -85,14 +59,14 @@ main() {
     local -a base_packages
     local -a backports_packages
 
-    "$ROOT/install/preflight.sh"
+    "$DOTFILES_ROOT/install/preflight.sh"
 
     mapfile -t base_packages < <(
-        manifest_packages "$ROOT/packages/base.txt"
+        manifest_packages "$DOTFILES_ROOT/packages/base.txt"
     )
 
     mapfile -t backports_packages < <(
-        manifest_packages "$ROOT/packages/backports.txt"
+        manifest_packages "$DOTFILES_ROOT/packages/backports.txt"
     )
 
     [ "${#base_packages[@]}" -gt 0 ] ||

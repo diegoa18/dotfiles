@@ -2,10 +2,13 @@
 
 set -euo pipefail
 
-ROOT="$(
-    cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." &&
+SCRIPT_DIR="$(
+    cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &&
     pwd -P
 )"
+
+# shellcheck source=lib/common.sh
+. "$SCRIPT_DIR/lib/common.sh"
 
 ROFI_REPO="https://github.com/lbonn/rofi.git"
 ROFI_TAG="1.7.9+wayland1"
@@ -17,14 +20,7 @@ ROFI_BIN="$PREFIX/bin/rofi"
 MARKER="$PREFIX/share/dotfiles/rofi-build"
 WORK=""
 
-die() {
-    printf 'ERROR: %s\n' "$1" >&2
-    exit 1
-}
 
-log() {
-    printf '\n==> %s\n' "$1"
-}
 
 cleanup() {
     if [ -n "$WORK" ] && [ -d "$WORK" ]; then
@@ -32,23 +28,6 @@ cleanup() {
     fi
 }
 
-manifest_packages() {
-    local manifest="$1"
-    local line
-
-    [ -r "$manifest" ] ||
-        die "Manifest not readable: $manifest"
-
-    while IFS= read -r line || [ -n "$line" ]; do
-        line="${line%%#*}"
-        line="${line#"${line%%[![:space:]]*}"}"
-        line="${line%"${line##*[![:space:]]}"}"
-
-        [ -n "$line" ] || continue
-
-        printf '%s\n' "$line"
-    done < "$manifest"
-}
 
 expected_marker() {
     cat <<EOF_MARKER
@@ -86,7 +65,7 @@ main() {
     local actual_rev
     local version
 
-    "$ROOT/install/preflight.sh"
+    "$DOTFILES_ROOT/install/preflight.sh"
 
     if installation_is_current; then
         log "Rofi $ROFI_VERSION is already installed"
@@ -94,7 +73,7 @@ main() {
     fi
 
     mapfile -t build_packages < <(
-        manifest_packages "$ROOT/packages/build-rofi.txt"
+        manifest_packages "$DOTFILES_ROOT/packages/build-rofi.txt"
     )
 
     [ "${#build_packages[@]}" -gt 0 ] ||

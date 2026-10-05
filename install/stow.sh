@@ -2,12 +2,15 @@
 
 set -euo pipefail
 
-ROOT="$(
-    cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." &&
+SCRIPT_DIR="$(
+    cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &&
     pwd -P
 )"
 
-STOW_DIR="$ROOT/home"
+# shellcheck source=lib/common.sh
+. "$SCRIPT_DIR/lib/common.sh"
+
+STOW_DIR="$DOTFILES_ROOT/home"
 
 STOW_PACKAGES=(
     dunst
@@ -20,19 +23,12 @@ STOW_PACKAGES=(
     waybar
 )
 
-log() {
-    printf '\n==> %s\n' "$1"
-}
 
-die() {
-    printf 'ERROR: %s\n' "$1" >&2
-    exit 1
-}
 
 main() {
     local package
 
-    "$ROOT/install/preflight.sh"
+    "$DOTFILES_ROOT/install/preflight.sh"
 
     command -v stow >/dev/null 2>&1 ||
         die "GNU Stow is not installed; run install/packages.sh first"
