@@ -3,21 +3,25 @@
 set -u
 
 SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
-MAP="$HOME/.local/state/cliphist/image-names"
 
 mkdir -p "$SCREENSHOT_DIR"
-mkdir -p "$(dirname "$MAP")"
+
+geometry="$(slurp)" || exit 0
+
+[ -n "$geometry" ] || exit 0
 
 file="$SCREENSHOT_DIR/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png"
 
-if grimblast save area "$file"; then
-    hash=$(sha256sum "$file" | cut -d' ' -f1)
-
-    printf '%s\t%s\n' "$hash" "$file" >> "$MAP"
-
+if grim -g "$geometry" "$file"; then
     wl-copy --type image/png < "$file"
 
     notify-send \
         "Screenshot" \
         "Screenshot taken and saved to $file"
+else
+    rm -f "$file"
+    notify-send \
+        "Screenshot" \
+        "Failed to capture screenshot"
+    exit 1
 fi
