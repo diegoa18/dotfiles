@@ -1,0 +1,6 @@
+# OpenCode-generated runtime/package state.
+^/\.config/opencode/node_modules$
+^/\.config/opencode/bun\.lock$
+^/\.config/opencode/package\.json$
+^/\.config/opencode/package-lock\.json$
+^/\.config/opencode/\.gitignore$
