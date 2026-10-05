@@ -113,7 +113,9 @@ done
 
 # Backports is not a preflight failure. packages.sh will be responsible for
 # configuring it on a clean Debian installation when necessary.
-if apt-cache policy hyprland 2>/dev/null | grep -q 'trixie-backports'; then
+hyprland_policy="$(apt-cache policy hyprland 2>/dev/null || true)"
+
+if [[ "$hyprland_policy" == *trixie-backports* ]]; then
     ok "APT knows about trixie-backports"
 else
     warn "trixie-backports is not currently available; the installer will configure it."
