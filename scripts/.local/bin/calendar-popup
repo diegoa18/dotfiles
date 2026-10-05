@@ -1,0 +1,11 @@
+#!/bin/bash
+
+CALENDAR="$HOME/.config/quickshell/calendar.qml"
+
+PID="$(pgrep -f "quickshell.*calendar.qml" | head -n 1)"
+
+if [ -n "$PID" ]; then
+    kill "$PID"
+else
+    quickshell -p "$CALENDAR" >/dev/null 2>&1 &
+fi
