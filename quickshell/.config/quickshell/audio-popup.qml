@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Services.Pipewire
 import Quickshell.Hyprland
+import Quickshell.Services.Pipewire
 
 PanelWindow {
     id: root
@@ -33,6 +33,10 @@ PanelWindow {
         active: true
 
         onCleared: Qt.quit()
+    }
+
+    Keys.onEscapePressed: {
+        Qt.quit()
     }
 
     readonly property PwNode sink: Pipewire.defaultAudioSink

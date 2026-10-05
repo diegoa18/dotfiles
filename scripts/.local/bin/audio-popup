@@ -1,14 +1,10 @@
 #!/bin/bash
 
-set -u
+PID="$(pgrep -f 'quickshell.*audio-popup.qml' | head -n 1)"
 
-qml="$HOME/.config/quickshell/audio-popup.qml"
-pattern='quickshell.*-p.*/audio-popup\.qml'
-
-if pgrep -f "$pattern" >/dev/null; then
-    pkill -f "$pattern"
-    exit 0
+if [ -n "$PID" ]; then
+    kill "$PID"
+else
+    quickshell -p "$HOME/.config/quickshell/audio-popup.qml" \
+        >/tmp/quickshell-audio-popup.log 2>&1 &
 fi
-
-quickshell -p "$qml" \
-    >/tmp/quickshell-audio-popup.log 2>&1 &
