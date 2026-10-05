@@ -1,0 +1,23 @@
+# Debian 13 (trixie) packages required by the desktop.
+# One package per line. Keep this list limited to runtime/deployment
+# dependencies actually used by the dotfiles.
+
+brightnessctl
+cliphist
+dunst
+greetd
+grim
+libnotify-bin
+locales
+nautilus
+pipewire-audio
+playerctl
+power-profiles-daemon
+slurp
+stow
+tuigreet
+waybar
+wireplumber
+wl-clipboard
+xdg-desktop-portal-gtk
+xwayland

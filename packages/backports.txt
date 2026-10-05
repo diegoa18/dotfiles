@@ -1,0 +1,8 @@
+# Packages intentionally installed from trixie-backports.
+
+hyprland
+hyprlock
+hyprpaper
+hyprsunset
+quickshell
+xdg-desktop-portal-hyprland
