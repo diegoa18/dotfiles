@@ -1,0 +1,17 @@
+# Build dependencies for the pinned rofi-wayland source build.
+
+bison
+build-essential
+ca-certificates
+flex
+git
+libcairo2-dev
+libgdk-pixbuf-2.0-dev
+libglib2.0-dev
+libpango1.0-dev
+libwayland-dev
+libxkbcommon-dev
+meson
+ninja-build
+pkg-config
+wayland-protocols

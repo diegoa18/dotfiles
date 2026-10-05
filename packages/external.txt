@@ -8,8 +8,3 @@
 # Installed locally as Debian package ghostty 1.3.1-6~trixie,
 # but no configured APT repository currently provides it.
 ghostty
-
-# Required by SUPER+SPACE, SUPER+SHIFT+SPACE and rofi-clipboard.
-# Current executable: ~/.local/bin/rofi
-# Current revision: 18db5b1a (wayland)
-rofi-wayland
