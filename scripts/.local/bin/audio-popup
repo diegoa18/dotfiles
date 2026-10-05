@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -u
+
+qml="$HOME/.config/quickshell/audio-popup.qml"
+pattern='quickshell.*-p.*/audio-popup\.qml'
+
+if pgrep -f "$pattern" >/dev/null; then
+    pkill -f "$pattern"
+    exit 0
+fi
+
+quickshell -p "$qml" \
+    >/tmp/quickshell-audio-popup.log 2>&1 &

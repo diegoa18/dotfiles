@@ -65,6 +65,7 @@
         "scroll-step": 5,
         "max-volume": 100,
         "tooltip-format": "{desc}\n{volume}%",
+        "on-click": "~/.local/bin/audio-popup",
         "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
     },
 
