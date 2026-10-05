@@ -19,3 +19,6 @@
 
 # OpenCode generated package state
 opencode/.config/opencode/package-lock.json
+
+# Local reproducibility audits
+repro-audit*.txt
