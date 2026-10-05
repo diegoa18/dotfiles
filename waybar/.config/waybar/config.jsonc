@@ -22,7 +22,9 @@
     ],
 
     "custom/user": {
-        "format": "diego",
+        "exec": "id -un",
+        "interval": "once",
+        "format": "{}",
         "tooltip": false
     },
 
