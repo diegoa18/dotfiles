@@ -15,6 +15,7 @@
     ],
 
     "modules-right": [
+        "pulseaudio",
         "network",
         "battery",
         "custom/power"
@@ -47,6 +48,26 @@
         "locale": "es_CL",
         "on-click": "~/.local/bin/calendar-popup"
     },
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰝟 Muted",
+        "format-icons": {
+            "headphone": "",
+            "headset": "",
+            "speaker": "",
+            "hdmi": "",
+            "default": [
+                "",
+                "",
+                ""
+            ]
+        },
+        "scroll-step": 5,
+        "max-volume": 100,
+        "tooltip-format": "{desc}\n{volume}%",
+        "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    },
+
     "network": {
         "format-wifi": "  {essid}",
         "format-ethernet": "󰈀  {ifname}",

@@ -34,6 +34,7 @@ window#waybar.floating {
     padding: 0 14px;
 }
 
+#pulseaudio,
 #network,
 #battery,
 #custom-power {
