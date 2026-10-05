@@ -60,7 +60,7 @@ hl.bind(
 
 -- arranque
 hl.on("hyprland.start", function()
-    hl.exec_cmd("~/.local/bin/random-wallpaper && hyprpaper")
+    hl.exec_cmd("~/.local/bin/random-wallpaper")
     hl.exec_cmd("waybar")
     hl.exec_cmd("dunst")
     hl.exec_cmd("quickshell -c default")
