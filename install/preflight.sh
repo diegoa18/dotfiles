@@ -101,8 +101,7 @@ done
 # Validate the repository layout independently of its installation path.
 for file in \
     packages/base.txt \
-    packages/backports.txt \
-    packages/external.txt
+    packages/backports.txt
 do
     if [ -f "$ROOT/$file" ]; then
         ok "Repository file present: $file"

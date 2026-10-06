@@ -1,0 +1,16 @@
+# Build dependencies for the pinned Ghostty source build.
+
+ca-certificates
+curl
+gcc-multilib
+gettext
+git
+gzip
+libadwaita-1-dev
+libgtk-4-dev
+libgtk4-layer-shell-dev
+libxml2-utils
+minisign
+pkg-config
+tar
+xz-utils
