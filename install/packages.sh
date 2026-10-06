@@ -89,6 +89,8 @@ main() {
         -t trixie-backports \
         "${backports_packages[@]}"
 
+    "$DOTFILES_ROOT/install/locales.sh"
+
     log "Package installation complete"
 }
 
