@@ -54,10 +54,6 @@
         "format": "{icon} {volume}%",
         "format-muted": "<span font_family=\"Symbols Nerd Font\">󰝟</span> Muted",
         "format-icons": {
-            "headphone": "<span font_family=\"Symbols Nerd Font\"></span>",
-            "headset": "<span font_family=\"Symbols Nerd Font\"></span>",
-            "speaker": "<span font_family=\"Symbols Nerd Font\"></span>",
-            "hdmi": "<span font_family=\"Symbols Nerd Font\"></span>",
             "default": [
                 "<span font_family=\"Symbols Nerd Font\"></span>",
                 "<span font_family=\"Symbols Nerd Font\"></span>",

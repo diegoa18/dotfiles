@@ -32,6 +32,14 @@ PanelWindow {
 
     readonly property PwNode sink: Pipewire.defaultAudioSink
 
+    readonly property int volumePercent:
+        Math.round((root.sink?.audio?.volume ?? 0) * 100)
+
+    readonly property color osdColor:
+        root.osdType === "volume" && root.volumePercent > 100
+            ? "#ed8796"
+            : "#ffffff"
+
     PwObjectTracker {
         objects: [root.sink]
     }
@@ -137,7 +145,7 @@ PanelWindow {
                     : "sans-serif"
 
                 font.pixelSize: 16
-                color: "#ffffff"
+                color: root.osdColor
             }
 
             // Porcentaje o estado
@@ -164,7 +172,7 @@ PanelWindow {
 
                 font.family: "sans-serif"
                 font.pixelSize: 16
-                color: "#ffffff"
+                color: root.osdColor
             }
         }
     }
