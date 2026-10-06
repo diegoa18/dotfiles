@@ -133,6 +133,7 @@ PanelWindow {
                             ? "#8a8a8a"
                             : "#ffffff"
 
+                        font.family: "Symbols Nerd Font"
                         font.pixelSize: 16
                     }
 

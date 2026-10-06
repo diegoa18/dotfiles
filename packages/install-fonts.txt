@@ -1,0 +1,7 @@
+# Tools required to install pinned user fonts.
+
+ca-certificates
+curl
+fontconfig
+tar
+xz-utils

@@ -52,16 +52,16 @@
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",
-        "format-muted": "󰝟 Muted",
+        "format-muted": "<span font_family=\"Symbols Nerd Font\">󰝟</span> Muted",
         "format-icons": {
-            "headphone": "",
-            "headset": "",
-            "speaker": "",
-            "hdmi": "",
+            "headphone": "<span font_family=\"Symbols Nerd Font\"></span>",
+            "headset": "<span font_family=\"Symbols Nerd Font\"></span>",
+            "speaker": "<span font_family=\"Symbols Nerd Font\"></span>",
+            "hdmi": "<span font_family=\"Symbols Nerd Font\"></span>",
             "default": [
-                "",
-                "",
-                ""
+                "<span font_family=\"Symbols Nerd Font\"></span>",
+                "<span font_family=\"Symbols Nerd Font\"></span>",
+                "<span font_family=\"Symbols Nerd Font\"></span>"
             ]
         },
         "scroll-step": 5,
@@ -72,9 +72,9 @@
     },
 
     "network": {
-        "format-wifi": "  {essid}",
-        "format-ethernet": "󰈀  {ifname}",
-        "format-disconnected": "󰖪",
+        "format-wifi": "<span font_family=\"Symbols Nerd Font\"></span>  {essid}",
+        "format-ethernet": "<span font_family=\"Symbols Nerd Font\">󰈀</span>  {ifname}",
+        "format-disconnected": "<span font_family=\"Symbols Nerd Font\">󰖪</span>",
         "tooltip-format-wifi": "{essid}\n{signalStrength}%\n{ipaddr}",
         "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
         "tooltip-format-disconnected": "Sin conexión"
@@ -82,15 +82,15 @@
 
     "battery": {
         "format": "{icon} {capacity}%",
-        "format-charging": " {capacity}%",
-        "format-plugged": " {capacity}%",
-        "format-full": " {capacity}%",
+        "format-charging": "<span font_family=\"Symbols Nerd Font\"></span> {capacity}%",
+        "format-plugged": "<span font_family=\"Symbols Nerd Font\"></span> {capacity}%",
+        "format-full": "<span font_family=\"Symbols Nerd Font\"></span> {capacity}%",
         "format-icons": [
-            "",
-            "",
-            "",
-            "",
-            ""
+            "<span font_family=\"Symbols Nerd Font\"></span>",
+            "<span font_family=\"Symbols Nerd Font\"></span>",
+            "<span font_family=\"Symbols Nerd Font\"></span>",
+            "<span font_family=\"Symbols Nerd Font\"></span>",
+            "<span font_family=\"Symbols Nerd Font\"></span>"
         ],
         "tooltip-format": "{capacity}%\n{timeTo}\n{power:.1f} W"
     },

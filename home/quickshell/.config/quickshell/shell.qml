@@ -22,17 +22,13 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     aboveWindows: true
 
-    // ─────────────────────────
     // Estado del OSD
-    // ─────────────────────────
 
     property bool visibleOsd: false
     property string osdType: ""
     property int brightnessValue: 0
 
-    // ─────────────────────────
     // PipeWire
-    // ─────────────────────────
 
     readonly property PwNode sink: Pipewire.defaultAudioSink
 
@@ -40,9 +36,7 @@ PanelWindow {
         objects: [root.sink]
     }
 
-    // ─────────────────────────
     // Ocultar OSD
-    // ─────────────────────────
 
     Timer {
         id: hideTimer
@@ -55,9 +49,7 @@ PanelWindow {
         }
     }
 
-    // ─────────────────────────
     // Mostrar volumen
-    // ─────────────────────────
 
     function showVolumeOsd() {
         root.osdType = "volume"
@@ -65,9 +57,7 @@ PanelWindow {
         hideTimer.restart()
     }
 
-    // ─────────────────────────
     // IPC → brillo
-    // ─────────────────────────
 
     IpcHandler {
         target: "brightness"
@@ -80,9 +70,7 @@ PanelWindow {
         }
     }
 
-    // ─────────────────────────
     // PipeWire → volumen
-    // ─────────────────────────
 
     Connections {
         target: root.sink?.audio ?? null
@@ -96,50 +84,88 @@ PanelWindow {
         }
     }
 
-    // ─────────────────────────
     // OSD
-    // ─────────────────────────
 
     visible: root.visibleOsd
 
     Rectangle {
-    anchors.fill: parent
+        anchors.fill: parent
 
-    radius: 10
+        radius: 10
+        color: "#59080808"
 
-    color: "#59080808"
+        border.width: 1
+        border.color: "#20ffffff"
 
-    border.width: 1
-    border.color: "#20ffffff"
+        Row {
+            anchors.centerIn: parent
+            spacing: 8
 
-    Text {
-        anchors.centerIn: parent
+            // Icono
 
-        text: {
-            if (root.osdType === "volume") {
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
 
-                if (!root.sink || !root.sink.audio)
-                    return "  Audio"
+                text: {
+                    if (root.osdType === "brightness")
+                        return "☀"
 
-                if (root.sink.audio.muted)
-                    return "󰝟  Muted"
+                    if (root.osdType !== "volume")
+                        return ""
 
-                return "  " +
-                       Math.round(root.sink.audio.volume * 100) +
-                       "%"
+                    const audio = root.sink?.audio
+
+                    if (!audio)
+                        return ""
+
+                    if (audio.muted)
+                        return "󰝟"
+
+                    const percent = Math.round(audio.volume * 100)
+
+                    if (percent < 34)
+                        return ""
+
+                    if (percent < 67)
+                        return ""
+
+                    return ""
+                }
+
+                font.family: root.osdType === "volume"
+                    ? "Symbols Nerd Font"
+                    : "sans-serif"
+
+                font.pixelSize: 16
+                color: "#ffffff"
             }
 
-            if (root.osdType === "brightness") {
-                return "☀  " +
-                       root.brightnessValue +
-                       "%"
+            // Porcentaje o estado
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+
+                text: {
+                    if (root.osdType === "volume") {
+                        if (!root.sink || !root.sink.audio)
+                            return "Audio"
+
+                        if (root.sink.audio.muted)
+                            return "Muted"
+
+                        return Math.round(root.sink.audio.volume * 100) + "%"
+                    }
+
+                    if (root.osdType === "brightness")
+                        return root.brightnessValue + "%"
+
+                    return ""
+                }
+
+                font.family: "sans-serif"
+                font.pixelSize: 16
+                color: "#ffffff"
             }
-
-            return ""
-        }
-
-        color: "#ffffff"
-        font.pixelSize: 16
         }
     }
 }
