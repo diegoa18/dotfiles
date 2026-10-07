@@ -13,6 +13,7 @@ nautilus
 pipewire-audio
 playerctl
 power-profiles-daemon
+procps
 slurp
 stow
 tuigreet

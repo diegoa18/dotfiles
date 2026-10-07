@@ -133,6 +133,8 @@ fetch_signed_artifact() {
     local attempt
 
     for attempt in 1 2; do
+        log "Checking signed artifact $archive (attempt $attempt/2)"
+
         download "$url" "$artifact"
         download "${url}.minisig" "$signature"
 
