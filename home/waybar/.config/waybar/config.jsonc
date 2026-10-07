@@ -25,7 +25,8 @@
         "exec": "id -un",
         "interval": "once",
         "format": "{}",
-        "tooltip": false
+        "tooltip": false,
+        "on-click": "~/.local/bin/system-info-popup"
     },
 
     "mpris": {
