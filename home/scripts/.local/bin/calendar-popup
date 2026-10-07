@@ -1,11 +1,21 @@
 #!/bin/bash
 
-CALENDAR="$HOME/.config/quickshell/calendar.qml"
+set -euo pipefail
 
-PID="$(pgrep -f "quickshell.*calendar.qml" | head -n 1)"
+CONFIG="$HOME/.config/quickshell/calendar.qml"
 
-if [ -n "$PID" ]; then
-    kill "$PID"
-else
-    quickshell -p "$CALENDAR" >/dev/null 2>&1 &
+if ! command -v quickshell >/dev/null 2>&1; then
+    printf 'Error: quickshell is not available in PATH.\n' >&2
+    exit 1
 fi
+
+if [ ! -r "$CONFIG" ]; then
+    printf 'Error: cannot read %s\n' "$CONFIG" >&2
+    exit 1
+fi
+
+if quickshell kill -p "$CONFIG" >/dev/null 2>&1; then
+    exit 0
+fi
+
+exec quickshell --no-duplicate --daemonize --path "$CONFIG"

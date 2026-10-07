@@ -1,9 +1,21 @@
 #!/bin/bash
 
-PID="$(pgrep -f 'quickshell.*power\.qml' | head -n 1)"
+set -euo pipefail
 
-if [ -n "$PID" ]; then
-    kill "$PID"
-else
-    quickshell -p "$HOME/.config/quickshell/power.qml" >/dev/null 2>&1 &
+CONFIG="$HOME/.config/quickshell/power.qml"
+
+if ! command -v quickshell >/dev/null 2>&1; then
+    printf 'Error: quickshell is not available in PATH.\n' >&2
+    exit 1
 fi
+
+if [ ! -r "$CONFIG" ]; then
+    printf 'Error: cannot read %s\n' "$CONFIG" >&2
+    exit 1
+fi
+
+if quickshell kill -p "$CONFIG" >/dev/null 2>&1; then
+    exit 0
+fi
+
+exec quickshell --no-duplicate --daemonize --path "$CONFIG"
