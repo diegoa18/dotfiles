@@ -16,11 +16,25 @@ BACKPORTS_SOURCE="/etc/apt/sources.list.d/dotfiles-backports.sources"
 
 
 backports_configured() {
-    grep -RqsE \
-        '(^|[[:space:]/])trixie-backports([[:space:]/]|$)' \
-        /etc/apt/sources.list \
-        /etc/apt/sources.list.d \
-        2>/dev/null
+    local architecture
+    local targets
+
+    architecture="$(dpkg --print-architecture)" ||
+        die "Unable to determine the system architecture"
+
+    targets="$(
+        # APT expands this placeholder; keep it literal for the shell.
+        # shellcheck disable=SC2016
+        apt-get indextargets \
+            --no-release-info \
+            --format '$(RELEASE)' \
+            'Created-By: Packages' \
+            "Architecture: $architecture" \
+            'Component: main'
+    )" ||
+        die "Unable to inspect configured APT package indexes"
+
+    grep -Fxq 'trixie-backports' <<<"$targets"
 }
 
 configure_backports() {
@@ -90,6 +104,7 @@ main() {
         "${backports_packages[@]}"
 
     "$DOTFILES_ROOT/install/locales.sh"
+    "$DOTFILES_ROOT/install/fonts.sh"
 
     log "Package installation complete"
 }
