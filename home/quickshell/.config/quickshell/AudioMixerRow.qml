@@ -11,9 +11,13 @@ Item {
     property bool microphone: false
     property bool showMixerButton: false
     property bool mixerExpanded: false
+    property bool showOutputButton: false
+    property bool outputsExpanded: false
+    property bool outputSelectionEnabled: true
     property int titlePixelSize: 13
     property real maximumVolume: 1.5
     signal mixerToggleRequested()
+    signal outputToggleRequested()
 
     readonly property var liveNodes: AudioMixer.availableNodes(nodes)
     readonly property real audioVolume: AudioMixer.maximumVolume(liveNodes)
@@ -146,12 +150,64 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         height: 18
-        visible: control.subtitle.length > 0
+        visible: control.subtitle.length > 0 && !control.showOutputButton
         text: control.subtitle
         textFormat: Text.PlainText
         elide: Text.ElideRight
         maximumLineCount: 1
         color: "#a5adcb"
         font.pixelSize: 11
+    }
+
+    ToolButton {
+        id: outputButton
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        height: 22
+        padding: 0
+        visible: control.showOutputButton
+        enabled: control.outputSelectionEnabled
+        Accessible.name: "Choose audio output: " + control.subtitle
+
+        background: Rectangle {
+            radius: 5
+            color: outputButton.hovered || outputButton.activeFocus ? "#10ffffff" : "transparent"
+        }
+
+        contentItem: Item {
+            Text {
+                anchors.left: parent.left
+                anchors.right: arrow.left
+                anchors.rightMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
+                text: control.subtitle
+                textFormat: Text.PlainText
+                elide: Text.ElideRight
+                color: control.outputsExpanded || outputButton.activeFocus ? "#8aadf4" : "#a5adcb"
+                font.pixelSize: 11
+            }
+
+            Text {
+                id: arrow
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                width: 16
+                text: control.outputsExpanded ? "▴" : "▾"
+                horizontalAlignment: Text.AlignHCenter
+                color: control.outputsExpanded || outputButton.hovered || outputButton.activeFocus
+                    ? "#8aadf4" : "#a5adcb"
+                font.pixelSize: 14
+            }
+        }
+
+        onClicked: control.outputToggleRequested()
+        ToolTip.visible: hovered
+        ToolTip.delay: 500
+        ToolTip.text: control.outputsExpanded ? "Hide outputs" : "Choose audio output"
+
+        HoverHandler {
+            cursorShape: Qt.PointingHandCursor
+        }
     }
 }

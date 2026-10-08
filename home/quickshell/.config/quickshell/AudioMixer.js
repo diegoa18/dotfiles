@@ -1,5 +1,24 @@
 .pragma library
 
+function outputLabel(node) {
+    return node ? node.description || node.nickname || node.name || "Audio output" : "No audio output";
+}
+
+function outputNodes(nodes) {
+    return nodes.filter(function(node) {
+        // Include unbound outputs so PwObjectTracker can make them ready.
+        return node && node.audio && node.isSink && !node.isStream;
+    }).sort(function(left, right) {
+        var a = outputLabel(left).toLowerCase();
+        var b = outputLabel(right).toLowerCase();
+        if (a !== b)
+            return a < b ? -1 : 1;
+        a = left.name || "";
+        b = right.name || "";
+        return a < b ? -1 : a > b ? 1 : left.id - right.id;
+    });
+}
+
 function playbackNodes(nodes) {
     return nodes.filter(function(node) {
         return node && node.audio && node.isStream && node.isSink;
