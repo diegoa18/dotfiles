@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -euo pipefail
+
+fail() {
+    printf 'Error: %s\n' "$1" >&2
+    exit 1
+}
+
+session_is_active() {
+    local socket
+
+    [ -n "${XDG_RUNTIME_DIR:-}" ] || return 1
+    [ -n "${WAYLAND_DISPLAY:-}" ] || return 1
+    [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] || return 1
+
+    case "$WAYLAND_DISPLAY" in
+        /*) socket="$WAYLAND_DISPLAY" ;;
+        *) socket="$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ;;
+    esac
+
+    [ -S "$socket" ] || return 1
+    command -v hyprctl >/dev/null 2>&1 || return 1
+    hyprctl -i "$HYPRLAND_INSTANCE_SIGNATURE" version >/dev/null 2>&1
+}
+
+main() {
+    local variable
+    local -a session_variables=()
+
+    [ "$#" -le 1 ] || fail "Usage: waybar-session [start|check]"
+
+    case "${1:-start}" in
+        check)
+            session_is_active
+            return
+            ;;
+        start)
+            session_is_active || fail "An active Hyprland session is required."
+            ;;
+        *) fail "Usage: waybar-session [start|check]" ;;
+    esac
+
+    command -v systemctl >/dev/null 2>&1 || fail "systemctl is not available."
+
+    # Import only the environment needed by Waybar and its click launchers.
+    for variable in \
+        XDG_RUNTIME_DIR WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE \
+        DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP \
+        DBUS_SESSION_BUS_ADDRESS PATH
+    do
+        if [[ -v "$variable" ]]; then
+            session_variables+=("$variable")
+        fi
+    done
+
+    systemctl --user import-environment "${session_variables[@]}"
+    systemctl --user daemon-reload
+    systemctl --user reset-failed waybar.service
+    exec systemctl --user restart waybar.service
+}
+
+main "$@"

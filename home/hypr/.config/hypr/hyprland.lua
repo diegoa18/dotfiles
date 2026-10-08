@@ -61,7 +61,7 @@ hl.bind(
 -- arranque
 hl.on("hyprland.start", function()
     hl.exec_cmd("~/.local/bin/random-wallpaper")
-    hl.exec_cmd("waybar")
+    hl.exec_cmd("~/.local/bin/waybar-session start")
     hl.exec_cmd("dunst")
     hl.exec_cmd("quickshell -c default")
     hl.exec_cmd("wl-paste --type text --watch cliphist store")

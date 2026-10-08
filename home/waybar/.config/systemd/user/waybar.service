@@ -1,0 +1,19 @@
+[Unit]
+Description=Waybar for the Hyprland session
+PartOf=graphical-session.target
+After=graphical-session.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=exec
+ExecCondition=%h/.local/bin/waybar-session check
+ExecStart=/usr/bin/waybar --log-level info
+ExecReload=/bin/kill -USR2 $MAINPID
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=10
+LimitCORE=0
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=waybar
