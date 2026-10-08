@@ -4,21 +4,11 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.Mpris
 
-PanelWindow {
+WaybarPopup {
     id: root
 
-    anchors {
-        top: true
-        left: true
-    }
-
-    margins {
-        top: 32
-        left: 70
-    }
-
-    implicitWidth: 280
-    implicitHeight: content.implicitHeight + 28
+    preferredPopupWidth: 280
+    preferredPopupHeight: content.implicitHeight + 28
 
     color: "transparent"
 

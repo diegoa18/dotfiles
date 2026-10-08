@@ -4,15 +4,11 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 
-PanelWindow {
+WaybarPopup {
     id: root
 
-    anchors { top: true; right: true }
-    margins { top: 32; right: 60 }
-
-    implicitWidth: 340
-    implicitHeight: Math.min(content.implicitHeight + 28,
-        root.screen ? Math.max(0, root.screen.height - 64) : Number.POSITIVE_INFINITY)
+    preferredPopupWidth: 340
+    preferredPopupHeight: content.implicitHeight + 28
 
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore

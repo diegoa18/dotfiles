@@ -1,0 +1,105 @@
+#!/usr/bin/python3
+"""Capture the opening point once, then launch a Quickshell Waybar popup."""
+
+import json
+import math
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+
+GAP = 8
+
+
+def number(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        raise ValueError("Invalid geometry")
+    return value
+
+
+def monitor_geometry(monitor):
+    scale = number(monitor["scale"])
+    if scale <= 0:
+        raise ValueError("Invalid scale")
+    width, height = number(monitor["width"]), number(monitor["height"])
+    if int(monitor.get("transform", 0)) % 2:
+        width, height = height, width
+    if width <= 0 or height <= 0:
+        raise ValueError("Invalid monitor size")
+    return number(monitor["x"]), number(monitor["y"]), width / scale, height / scale
+
+
+def opening_context(cursor, monitors, layers):
+    cx, cy = number(cursor["x"]), number(cursor["y"])
+    candidates = []
+    for monitor in monitors:
+        if monitor.get("disabled") or monitor.get("mirrorOf", "none") not in ("none", -1, None):
+            continue
+        x, y, width, height = monitor_geometry(monitor)
+        if x <= cx < x + width and y <= cy < y + height:
+            candidates.append((monitor, x, y, width, height))
+    if not candidates:
+        return {}
+    monitor, x, y, width, height = next(
+        (item for item in candidates if item[0].get("focused")), candidates[0]
+    )
+    # Hyprland reports layer surfaces in global logical coordinates.
+    bars = []
+    for level in layers.get(monitor["name"], {}).get("levels", {}).values():
+        for layer in level:
+            if layer.get("namespace") != "waybar":
+                continue
+            lx, ly = number(layer["x"]), number(layer["y"])
+            lw, lh = number(layer["w"]), number(layer["h"])
+            if lw > lh > 0 and y <= ly < y + height / 2:
+                distance = max(lx - cx, 0, cx - lx - lw) + abs(cy - ly - lh / 2)
+                bars.append((distance, ly + lh - y))
+    # A terminal launch or absent bar still has a predictable centered fallback.
+    bar_bottom = min(bars)[1] if bars else 24
+    return {"monitor": monitor["name"], "x": cx - x,
+            "barBottom": bar_bottom, "gap": GAP, "width": width, "height": height}
+
+
+def query(command):
+    result = subprocess.run(["hyprctl", "-j", command], check=True,
+                            capture_output=True, text=True, timeout=2)
+    return json.loads(result.stdout)
+
+
+def capture():
+    try:
+        cursor = query("cursorpos")
+        monitors = query("monitors")
+        try:
+            layers = query("layers")
+        except (OSError, subprocess.SubprocessError, ValueError):
+            layers = {}
+        return opening_context(cursor, monitors, layers)
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError, AttributeError):
+        return {}
+
+
+def main():
+    arguments = sys.argv[1:]
+    foreground = bool(arguments and arguments[0] == "--foreground")
+    if foreground:
+        arguments.pop(0)
+    if len(arguments) != 1 or not Path(arguments[0]).is_file():
+        print("Error: usage: waybar-popup [--foreground] CONFIG", file=sys.stderr)
+        return 1
+    executable = shutil.which("quickshell")
+    if executable is None:
+        print("Error: quickshell is not available in PATH.", file=sys.stderr)
+        return 1
+    environment = dict(os.environ)
+    environment["DOTFILES_POPUP_ANCHOR"] = json.dumps(capture(), separators=(",", ":"))
+    command = [executable, "--no-duplicate"]
+    if not foreground:
+        command.append("--daemonize")
+    command += ["--path", arguments[0]]
+    os.execve(executable, command, environment)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

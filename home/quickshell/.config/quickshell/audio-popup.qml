@@ -5,18 +5,8 @@ import Quickshell.Hyprland
 import Quickshell.Services.Pipewire
 import "AudioMixer.js" as AudioMixer
 
-PanelWindow {
+WaybarPopup {
     id: root
-
-    anchors {
-        top: true
-        right: true
-    }
-
-    margins {
-        top: 32
-        right: 90
-    }
 
     property bool mixerExpanded: false
     property bool outputsExpanded: false
@@ -26,12 +16,9 @@ PanelWindow {
     readonly property var outputNodes: AudioMixer.outputNodes(Pipewire.nodes.values)
     readonly property var applicationGroups: mixerExpanded
         ? AudioMixer.applicationGroups(playbackNodes) : []
-    readonly property var availableScreen: root.screen ?? Quickshell.screens[0] ?? null
-    readonly property real maximumHeight: availableScreen
-        ? Math.max(1, availableScreen.height - 64) : Number.POSITIVE_INFINITY
 
-    implicitWidth: 300
-    implicitHeight: Math.ceil(Math.min(maximumHeight, content.implicitHeight + 32))
+    preferredPopupWidth: 300
+    preferredPopupHeight: content.implicitHeight + 32
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     aboveWindows: true

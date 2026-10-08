@@ -2,21 +2,11 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 
-PanelWindow {
+WaybarPopup {
     id: root
 
-    anchors {
-        top: true
-        right: true
-    }
-
-    margins {
-        top: 32
-        right: 10
-    }
-
-    implicitWidth: 170
-    implicitHeight: 188
+    preferredPopupWidth: 170
+    preferredPopupHeight: 188
 
     color: "transparent"
 

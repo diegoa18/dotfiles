@@ -23,4 +23,4 @@ if quickshell kill -p "$CONFIG" >/dev/null 2>&1; then
     exit 0
 fi
 
-exec quickshell --no-duplicate --daemonize --path "$CONFIG"
+exec "$HOME/.local/bin/waybar-popup" "$CONFIG"

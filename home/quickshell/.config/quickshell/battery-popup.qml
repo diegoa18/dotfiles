@@ -4,11 +4,8 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.UPower
 
-PanelWindow {
+WaybarPopup {
     id: root
-
-    anchors { top: true; right: true }
-    margins { top: 32; right: 36 }
 
     readonly property var batteries: UPower.devices.values.filter(function(device) {
         return device && device.ready && device.isLaptopBattery && device.isPresent
@@ -19,11 +16,9 @@ PanelWindow {
         ? Math.round(Math.max(0, Math.min(1, battery.percentage)) * 100) : 0
     readonly property color chargeColor: !UPower.onBattery ? "#a6da95"
         : percentage <= 15 ? "#ed8796" : percentage <= 30 ? "#eed49f" : "#8aadf4"
-    readonly property var availableScreen: root.screen ?? Quickshell.screens[0] ?? null
 
-    implicitWidth: 320
-    implicitHeight: Math.ceil(Math.min(content.implicitHeight + 32,
-        availableScreen ? Math.max(1, availableScreen.height - 64) : Number.POSITIVE_INFINITY))
+    preferredPopupWidth: 320
+    preferredPopupHeight: content.implicitHeight + 32
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     aboveWindows: true

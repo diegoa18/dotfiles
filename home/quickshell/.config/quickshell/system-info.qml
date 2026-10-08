@@ -5,30 +5,12 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import "FastfetchText.js" as FastfetchText
 
-PanelWindow {
+WaybarPopup {
     id: root
 
-    anchors {
-        top: true
-        left: true
-    }
-
-    margins {
-        top: 32
-        left: 12
-    }
-
     readonly property int padding: 16
-    readonly property var availableScreen: root.screen ?? Quickshell.screens[0] ?? null
-    readonly property real maximumWidth: availableScreen
-        ? Math.max(1, availableScreen.width - 24)
-        : consoleText.implicitWidth + padding * 2
-    readonly property real maximumHeight: availableScreen
-        ? Math.max(1, availableScreen.height - 64)
-        : consoleText.implicitHeight + padding * 2
-
-    implicitWidth: Math.ceil(Math.min(consoleText.implicitWidth + padding * 2, maximumWidth))
-    implicitHeight: Math.ceil(Math.min(consoleText.implicitHeight + padding * 2, maximumHeight))
+    preferredPopupWidth: consoleText.implicitWidth + padding * 2
+    preferredPopupHeight: consoleText.implicitHeight + padding * 2
 
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
