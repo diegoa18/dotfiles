@@ -90,7 +90,8 @@
             "<span font_family=\"Symbols Nerd Font\"></span>",
             "<span font_family=\"Symbols Nerd Font\"></span>"
         ],
-        "tooltip-format": "{capacity}%\n{timeTo}\n{power:.1f} W"
+        "tooltip-format": "{capacity}%\n{timeTo}\n{power:.1f} W",
+        "on-click": "~/.local/bin/battery-popup"
     },
 
     "custom/power": {

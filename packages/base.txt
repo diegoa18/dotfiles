@@ -27,6 +27,7 @@ seahorse
 slurp
 stow
 tuigreet
+upower
 waybar
 wireplumber
 wl-clipboard
