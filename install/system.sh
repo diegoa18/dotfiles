@@ -85,6 +85,8 @@ main() {
     systemctl is-enabled --quiet greetd.service ||
         die "greetd.service is not enabled"
 
+    "$DOTFILES_ROOT/install/keyring.sh"
+
     log "System configuration complete"
     printf 'display manager: %s\n' "$display_manager_unit"
     printf 'default target: %s\n' "$(systemctl get-default)"

@@ -1,0 +1,651 @@
+#!/usr/bin/python3 -I
+"""NetworkManager state/actions for the Quickshell network popup.
+
+Requests and events are newline-delimited JSON on stdin/stdout. Passwords
+travel through stdin and libnm; they are never placed in process arguments.
+"""
+
+import argparse
+import importlib.util
+import json
+import os
+from pathlib import Path
+import pwd
+import resource
+import sys
+import time
+import unicodedata
+import uuid
+
+
+NM = GLib = Gio = keyring = None
+MAX_REQUEST = 4096
+
+
+class RequestError(ValueError):
+    """A fixed message that never contains request contents or secrets."""
+
+
+def safe_label(value):
+    controls = {"LRE", "RLE", "LRO", "RLO", "PDF", "LRI", "RLI", "FSI", "PDI"}
+    return "".join("\ufffd" if unicodedata.category(char) == "Cc"
+                   or unicodedata.bidirectional(char) in controls else char
+                   for char in str(value or "")[:128])
+
+
+def validate_request(request):
+    fields = {
+        "refresh": {"action"}, "details": {"action", "enabled"},
+        "wifi": {"action", "enabled"}, "scan": {"action", "device"},
+        "disconnect": {"action", "device"}, "secure": {"action", "device"},
+        "connect": {"action", "device", "ap", "password"},
+    }
+    if not isinstance(request, dict) or not isinstance(request.get("action"), str):
+        raise RequestError("Invalid network request.")
+    action = request["action"]
+    if action not in fields or set(request) - fields[action]:
+        raise RequestError("Invalid network request.")
+    if action in ("wifi", "details") and not isinstance(request.get("enabled"), bool):
+        raise RequestError("Invalid network request.")
+    if action in ("connect", "scan", "disconnect", "secure"):
+        for name in ("device", "ap"):
+            if name == "ap" and name not in request:
+                continue
+            value = request.get(name)
+            if (not isinstance(value, str) or len(value) > 256
+                    or not value.startswith("/org/freedesktop/NetworkManager/")
+                    or any(not (char.isascii() and (char.isalnum() or char in "_/")) for char in value)):
+                raise RequestError("Invalid network request.")
+    if "password" in request:
+        value = request["password"]
+        if not isinstance(value, str) or "\0" in value or len(value.encode("utf-8")) > 256:
+            raise RequestError("Invalid Wi-Fi password.")
+    return request
+
+
+def parse_request(line):
+    def pairs(items):
+        result = {}
+        for name, value in items:
+            if name in result:
+                raise RequestError("Invalid network request.")
+            result[name] = value
+        return result
+
+    def invalid_constant(_value):
+        raise RequestError("Invalid network request.")
+
+    try:
+        if len(line) > MAX_REQUEST:
+            raise RequestError("Invalid network request.")
+        if isinstance(line, (bytes, bytearray)):
+            line = line.decode("utf-8")
+        return validate_request(json.loads(line, object_pairs_hook=pairs, parse_constant=invalid_constant))
+    except (ValueError, TypeError, UnicodeError, RecursionError):
+        raise RequestError("Invalid network request.") from None
+
+
+def diagnostic_snapshot(message):
+    return {name: message[name] for name in
+            ("type", "running", "wifiEnabled", "wifiHardwareEnabled", "hasWifi", "busy", "scanning")} | {
+        "devices": [{name: device[name] for name in ("kind", "state", "connected", "signal", "security")}
+                    for device in message["devices"]],
+        "networkCount": len(message["networks"]),
+    }
+
+
+def emit(message):
+    print(json.dumps(message, ensure_ascii=False, allow_nan=False), flush=True)
+
+
+def security_for(ap):
+    flags = int(ap.get_wpa_flags()) | int(ap.get_rsn_flags())
+    # Values from NM80211ApSecurityFlags; its GI name starts with a digit.
+    if flags & 0x400:
+        return "sae", "WPA2/WPA3" if flags & 0x100 else "WPA3"
+    if flags & 0x100:
+        return "wpa-psk", "WPA2" if int(ap.get_rsn_flags()) else "WPA"
+    if flags & (0x200 | 0x2000):
+        return None, "Enterprise"
+    if flags & (0x800 | 0x1000):
+        return "owe", "Enhanced Open"
+    if flags or int(ap.get_flags()) & 1:
+        return None, "WEP" if not flags else "Protected"
+    return "", "Open"
+
+
+def visible_devices(client):
+    return [device for device in client.get_devices()
+            if device.get_managed()
+            and device.get_device_type() in (NM.DeviceType.WIFI, NM.DeviceType.ETHERNET)
+            and not int(device.get_property("capabilities")) & int(NM.DeviceCapabilities.IS_SOFTWARE)]
+
+
+def matching_profiles(device, ap):
+    profiles = [profile for profile in device.get_available_connections()
+                if ap.connection_valid(profile)]
+    active = device.get_active_connection()
+    current = active.get_connection() if active else None
+    return sorted(profiles, key=lambda profile: (profile != current, profile.get_id().casefold()))
+
+
+def ip_details(config):
+    if not config:
+        return {"addresses": [], "gateway": "", "dns": []}
+    return {
+        "addresses": [f"{address.get_address()}/{address.get_prefix()}"
+                      for address in config.get_addresses()],
+        "gateway": config.get_gateway() or "",
+        "dns": list(config.get_nameservers()),
+    }
+
+
+def device_details(device, include_details=False):
+    state = device.get_state()
+    active = device.get_active_connection()
+    wifi = device.get_device_type() == NM.DeviceType.WIFI
+    ap = device.get_active_access_point() if wifi else None
+    ssid = ap.get_ssid() if ap else None
+    connected = state == NM.DeviceState.ACTIVATED
+    connecting = NM.DeviceState.PREPARE <= state <= NM.DeviceState.SECONDARIES
+    status = "Connected" if connected else "Connecting…" if connecting else "Disconnected"
+    if state == NM.DeviceState.UNAVAILABLE:
+        status = "Unavailable"
+    elif state == NM.DeviceState.FAILED:
+        status = "Connection failed"
+    ip4 = ip_details(device.get_ip4_config() if include_details else None)
+    ip6 = ip_details(device.get_ip6_config() if include_details else None)
+    profile = active.get_connection() if active else None
+    security = profile.get_setting_wireless_security() if profile and wifi else None
+    return {
+        "path": NM.Object.get_path(device), "interface": device.get_iface(),
+        "kind": "wifi" if wifi else "ethernet", "state": status,
+        "connected": connected, "connecting": connecting,
+        "title": safe_label(NM.utils_ssid_to_utf8(ssid.get_data()) if ssid
+                 else active.get_id() if active else "Wi-Fi" if wifi else "Ethernet"),
+        "signal": int(ap.get_strength()) if ap else None,
+        "security": security_for(ap)[1] if ap else "",
+        "frequency": int(ap.get_frequency()) if ap else 0,
+        "addresses": ip4["addresses"] + ip6["addresses"],
+        "gateway": ", ".join(value for value in (ip4["gateway"], ip6["gateway"]) if value),
+        "dns": list(dict.fromkeys(ip4["dns"] + ip6["dns"])),
+        "canDisconnect": bool(active),
+        "canConnect": not wifi and device.get_carrier() and not connected and not connecting,
+        "canSecurePassword": bool(security and security.get_key_mgmt() in ("wpa-psk", "sae")
+                                  and security.get_psk_flags() == NM.SettingSecretFlags.NONE),
+    }
+
+
+def network_rows(devices):
+    rows = {}
+    for device in devices:
+        if device.get_device_type() != NM.DeviceType.WIFI:
+            continue
+        active = device.get_active_access_point()
+        for ap in device.get_access_points():
+            ssid = ap.get_ssid()
+            if not ssid or not ssid.get_data():
+                continue
+            key_mgmt, security = security_for(ap)
+            profiles = matching_profiles(device, ap)
+            key = NM.Object.get_path(device) + ":" + bytes(ssid.get_data()).hex() + ":" + security
+            row = {
+                "key": key, "device": NM.Object.get_path(device), "ap": ap.get_path(),
+                "interface": device.get_iface(), "ssid": safe_label(NM.utils_ssid_to_utf8(ssid.get_data())),
+                "signal": int(ap.get_strength()), "security": security,
+                "active": ap == active and device.get_state() == NM.DeviceState.ACTIVATED,
+                "saved": bool(profiles), "needsPassword": key_mgmt in ("wpa-psk", "sae"),
+                "canConnect": bool(profiles) or (key_mgmt is not None and security != "WPA" and int(ap.get_mode()) == 2),
+            }
+            old = rows.get(key)
+            # Show one row per SSID/security/interface; preserve the actual active AP.
+            if old is None or (row["active"], row["signal"]) > (old["active"], old["signal"]):
+                rows[key] = row
+    return sorted(rows.values(), key=lambda row: (not row["active"], -row["signal"], row["ssid"].casefold()))
+
+
+def new_profile(device, ap=None, password=""):
+    profile = NM.SimpleConnection.new()
+    connection = NM.SettingConnection.new()
+    connection.set_property("id", NM.utils_ssid_to_utf8(ap.get_ssid().get_data()) if ap else "Ethernet")
+    connection.set_property("uuid", str(uuid.uuid4()))
+    connection.set_property("type", "802-11-wireless" if ap else "802-3-ethernet")
+    connection.add_permission("user", pwd.getpwuid(os.getuid()).pw_name, None)
+    connection.set_property("autoconnect", not ap or security_for(ap)[0] in ("wpa-psk", "sae"))
+    profile.add_setting(connection)
+    if ap:
+        wireless = NM.SettingWireless.new()
+        wireless.set_property("ssid", ap.get_ssid())
+        wireless.set_property("mode", "infrastructure")
+        profile.add_setting(wireless)
+        key_mgmt, label = security_for(ap)
+        if key_mgmt is None or label == "WPA" or int(ap.get_mode()) != 2:
+            raise RequestError("This network requires an existing configured profile.")
+        if key_mgmt:
+            security = NM.SettingWirelessSecurity.new()
+            security.set_property("key-mgmt", key_mgmt)
+            if key_mgmt in ("wpa-psk", "sae"):
+                security.add_proto("rsn")
+                security.set_property("psk-flags", NM.SettingSecretFlags.AGENT_OWNED)
+            if key_mgmt == "sae":
+                security.set_property("pmf", NM.SettingWirelessSecurityPmf.REQUIRED)
+            if key_mgmt in ("wpa-psk", "sae"):
+                validate_password(key_mgmt, password)
+                security.set_property("psk", password)
+            profile.add_setting(security)
+    else:
+        profile.add_setting(NM.SettingWired.new())
+    for setting_type in (NM.SettingIP4Config, NM.SettingIP6Config):
+        setting = setting_type.new()
+        setting.set_property("method", "auto")
+        profile.add_setting(setting)
+    return profile
+
+
+def validate_password(key_mgmt, password):
+    if not isinstance(password, str) or not password:
+        raise RequestError("Enter the network password.")
+    if key_mgmt == "wpa-psk":
+        hexadecimal = len(password) == 64 and all(char in "0123456789abcdefABCDEF" for char in password)
+        if not hexadecimal and not 8 <= len(password.encode("utf-8")) <= 63:
+            raise RequestError("WPA passwords must contain 8–63 bytes, or 64 hexadecimal characters.")
+
+
+class NetworkPopup:
+    def __init__(self, client, loop):
+        self.client, self.loop = client, loop
+        self.pending = None
+        self.timer = self.refresh_source = 0
+        self.watches = {}
+        self.input_buffer = bytearray()
+        self.discard_input = False
+        self.last_snapshot = None
+        self.details_enabled = self.diagnostic = self.include_private = False
+        self.keyring_ready = False
+        self.store = keyring.Keyring()
+
+    def ensure_keyring_agent(self):
+        def ready(bus, result, _data):
+            try:
+                self.keyring_ready = bool(bus.call_finish(result).unpack()[0])
+            except GLib.Error:
+                self.keyring_ready = False
+            if not self.keyring_ready:
+                emit({"type": "error", "message": "The network keyring agent is unavailable. Check that GNOME Keyring is installed."})
+            self.queue_snapshot()
+
+        try:
+            bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+            bus.call(keyring.AGENT_NAME, keyring.AGENT_PATH, keyring.AGENT_NAME,
+                     "Ready", None, GLib.VariantType.new("(b)"), Gio.DBusCallFlags.NONE,
+                     15000, None, ready, None)
+        except GLib.Error:
+            emit({"type": "error", "message": "The session keyring service is unavailable."})
+
+    def queue_snapshot(self, *_):
+        if not self.refresh_source:
+            self.refresh_source = GLib.timeout_add(100, self.publish)
+
+    def scan_if_stale(self):
+        # Device.get_path() is the hardware path; use NMObject for D-Bus IDs.
+        for device in visible_devices(self.client):
+            if device.get_device_type() == NM.DeviceType.WIFI and self.client.wireless_get_enabled():
+                age = time.clock_gettime(time.CLOCK_BOOTTIME) * 1000 - device.get_last_scan()
+                if device.get_last_scan() <= 0 or age > 30000:
+                    try:
+                        self.handle({"action": "scan", "device": NM.Object.get_path(device)})
+                    except (RequestError, GLib.Error, OSError) as error:
+                        message = (str(error) if isinstance(error, RequestError)
+                                   else "Could not refresh Wi-Fi networks. Try scanning again.")
+                        if self.pending:
+                            self.finish_operation(message)
+                        else:
+                            emit({"type": "error", "message": message})
+                break
+
+    def watch(self, devices):
+        desired = {(self.client, "notify"), (self.client, "device-added"),
+                   (self.client, "device-removed"), (self.client, "connection-added"),
+                   (self.client, "connection-removed")}
+        for device in devices:
+            desired.add((device, "notify"))
+            for config in (device.get_ip4_config(), device.get_ip6_config()):
+                if config:
+                    desired.add((config, "notify"))
+            if device.get_device_type() == NM.DeviceType.WIFI:
+                desired.update((device, signal) for signal in ("access-point-added", "access-point-removed"))
+                desired.update((ap, "notify") for ap in device.get_access_points())
+        for profile in self.client.get_connections():
+            desired.add((profile, "changed"))
+        if self.pending and self.pending.get("active"):
+            desired.add((self.pending["active"], "notify"))
+        for key in set(self.watches) - desired:
+            key[0].handler_disconnect(self.watches.pop(key))
+        for key in desired - set(self.watches):
+            self.watches[key] = key[0].connect(key[1], self.queue_snapshot)
+
+    def publish(self):
+        self.refresh_source = 0
+        self.settle()
+        devices = visible_devices(self.client)
+        self.watch(devices)
+        details = [device_details(device, self.details_enabled) for device in devices]
+        details.sort(key=lambda device: (not device["connected"], device["kind"] != "wifi", device["interface"]))
+        message = {
+            "type": "state", "running": self.client.get_nm_running(),
+            "wifiEnabled": self.client.wireless_get_enabled(),
+            "wifiHardwareEnabled": self.client.wireless_hardware_get_enabled(),
+            "hasWifi": any(device.get_device_type() == NM.DeviceType.WIFI for device in devices),
+            "keyringReady": self.keyring_ready,
+            "devices": details,
+            "networks": network_rows(devices) if self.client.wireless_get_enabled() else [],
+            "busy": self.pending is not None,
+            "scanning": bool(self.pending and self.pending["kind"] == "scan"),
+            "operation": self.pending["message"] if self.pending else "",
+        }
+        if message != self.last_snapshot:
+            emit(diagnostic_snapshot(message) if self.diagnostic and not self.include_private else message)
+            self.last_snapshot = message
+        return GLib.SOURCE_REMOVE
+
+    def start_operation(self, kind, message, device=None):
+        if self.pending:
+            raise RequestError("Wait for the current network operation to finish.")
+        self.pending = {"kind": kind, "message": message, "device": device, "cancel": Gio.Cancellable()}
+        self.timer = GLib.timeout_add_seconds(90 if kind in ("connect", "secure") else 20, self.timed_out)
+        emit({"type": "operation", "busy": True, "message": message})
+        self.queue_snapshot()
+
+    def finish_operation(self, error=None):
+        if self.timer:
+            GLib.source_remove(self.timer)
+            self.timer = 0
+        pending, self.pending = self.pending, None
+        if pending:
+            pending["cancel"].cancel()
+        emit({"type": "operation", "busy": False, "message": ""})
+        if error:
+            emit({"type": "error", "message": str(error)})
+        self.queue_snapshot()
+
+    def timed_out(self):
+        self.timer = 0
+        self.finish_operation("The network operation timed out. Try again.")
+        return GLib.SOURCE_REMOVE
+
+    def settle(self):
+        pending = self.pending
+        if not pending:
+            return
+        device = pending["device"]
+        if device and device not in visible_devices(self.client):
+            self.finish_operation("The network adapter is no longer available.")
+        elif pending["kind"] == "scan" and device.get_last_scan() > pending["lastScan"]:
+            self.finish_operation()
+        elif pending["kind"] == "connect" and pending.get("active"):
+            state = pending["active"].get_state()
+            if state == NM.ActiveConnectionState.ACTIVATED:
+                self.finish_operation()
+            elif state == NM.ActiveConnectionState.DEACTIVATED:
+                self.finish_operation("Connection failed. Check the password and network settings.")
+        elif pending["kind"] == "disconnect" and pending.get("accepted") and not device.get_active_connection():
+            self.finish_operation()
+
+    def callback(self, finish, followup=None):
+        pending = self.pending
+
+        def completed(source, result, *_):
+            if self.pending is not pending:
+                return
+            try:
+                value = getattr(source, finish)(result)
+                if followup:
+                    followup(value)
+                else:
+                    self.finish_operation()
+            except GLib.Error:
+                self.finish_operation("NetworkManager could not complete the operation. Check your permissions and connection settings.")
+            self.queue_snapshot()
+
+        return completed
+
+    def device(self, path):
+        device = next((device for device in visible_devices(self.client) if NM.Object.get_path(device) == path), None)
+        if device is None:
+            raise RequestError("The network adapter is no longer available.")
+        return device
+
+    def activate(self, profile, device, ap, fresh=False):
+        def started(active):
+            self.pending["active"] = active
+        path = ap.get_path() if ap else None
+        method = "add_and_activate_connection" if fresh else "activate_connection"
+        getattr(self.client, method + "_async")(
+            profile, device, path, self.pending["cancel"], self.callback(method + "_finish", started), None)
+
+    def store_password(self, profile, password, followup):
+        pending = self.pending
+
+        def stored(error):
+            if self.pending is not pending:
+                return
+            if error:
+                self.finish_operation(str(error))
+                return
+            security = profile.get_setting_wireless_security()
+            security.set_property("psk", None)
+            security.set_property("psk-flags", NM.SettingSecretFlags.AGENT_OWNED)
+            # Restrict this credential-bearing profile to the current account.
+            setting = profile.get_setting_connection()
+            for index in range(setting.get_num_permissions() - 1, -1, -1):
+                setting.remove_permission(index)
+            setting.add_permission("user", pwd.getpwuid(os.getuid()).pw_name, None)
+            followup()
+
+        self.store.store(profile.get_uuid(), password, stored, pending["cancel"])
+
+    def secure_existing(self, device):
+        active = device.get_active_connection()
+        profile = active.get_connection() if active else None
+        security = profile.get_setting_wireless_security() if profile else None
+        if not security or security.get_key_mgmt() not in ("wpa-psk", "sae"):
+            raise RequestError("No active personal Wi-Fi profile is available.")
+        if not self.keyring_ready:
+            raise RequestError("The keyring agent is not ready. Reopen the popup and try again.")
+        self.start_operation("secure", "Moving the saved password to the keyring…", device)
+        pending = self.pending
+
+        def retrieved(source, result, _data):
+            if self.pending is not pending:
+                return
+            try:
+                values = source.get_secrets_finish(result).unpack()
+                password = values.get("802-11-wireless-security", {}).get("psk")
+                validate_password(security.get_key_mgmt(), password)
+                self.store_password(profile, password, lambda: profile.commit_changes_async(
+                    True, pending["cancel"], self.callback("commit_changes_finish"), None))
+            except (ValueError, TypeError, GLib.Error):
+                self.finish_operation("The saved password could not be moved. Check your keyring and NetworkManager permissions.")
+
+        profile.get_secrets_async("802-11-wireless-security", pending["cancel"], retrieved, None)
+
+    def handle(self, request):
+        validate_request(request)
+        action = request.get("action")
+        if action == "details":
+            self.details_enabled = request["enabled"]
+            self.queue_snapshot()
+            return
+        if action == "refresh":
+            self.queue_snapshot()
+            return
+        if not self.client.get_nm_running():
+            raise RequestError("NetworkManager is not running.")
+        if self.pending:
+            raise RequestError("Wait for the current network operation to finish.")
+        if action == "wifi":
+            enabled = request.get("enabled")
+            if not isinstance(enabled, bool):
+                raise RequestError("Invalid Wi-Fi state.")
+            self.start_operation("wifi", "Updating Wi-Fi…")
+            self.client.dbus_set_property(
+                NM.DBUS_PATH, NM.DBUS_INTERFACE, "WirelessEnabled", GLib.Variant("b", enabled),
+                -1, None, self.callback("dbus_set_property_finish"), None)
+            return
+        device = self.device(request.get("device"))
+        if action == "secure":
+            self.secure_existing(device)
+        elif action == "scan":
+            if device.get_device_type() != NM.DeviceType.WIFI or not self.client.wireless_get_enabled():
+                raise RequestError("Enable Wi-Fi before scanning.")
+            self.start_operation("scan", "Scanning…", device)
+            self.pending["lastScan"] = device.get_last_scan()
+            device.request_scan_async(self.pending["cancel"], self.callback("request_scan_finish", lambda _: None), None)
+        elif action == "disconnect":
+            active = device.get_active_connection()
+            if not active:
+                return
+            self.start_operation("disconnect", "Disconnecting…", device)
+            self.client.deactivate_connection_async(
+                active, self.pending["cancel"], self.callback("deactivate_connection_finish",
+                                            lambda _: self.pending.update(accepted=True)), None)
+        elif action == "connect":
+            ap = None
+            if device.get_device_type() == NM.DeviceType.WIFI:
+                ap = device.get_access_point_by_path(request.get("ap", ""))
+                if not ap:
+                    raise RequestError("This network is no longer available. Refresh the list.")
+                profiles = matching_profiles(device, ap)
+            else:
+                profiles = sorted(device.get_available_connections(), key=lambda profile: profile.get_id().casefold())
+            password = request.get("password", "")
+            if password and not self.keyring_ready:
+                raise RequestError("The keyring agent is not ready. Reopen the popup and try again.")
+            profile = profiles[0] if profiles else new_profile(device, ap, password)
+            self.start_operation("connect", "Connecting…", device)
+            if profiles and password:
+                security = profile.get_setting_wireless_security()
+                if not security or security.get_key_mgmt() not in ("wpa-psk", "sae"):
+                    raise RequestError("This profile does not use a personal Wi-Fi password.")
+                validate_password(security.get_key_mgmt(), password)
+                self.store_password(profile, password, lambda: profile.commit_changes_async(
+                    True, self.pending["cancel"], self.callback("commit_changes_finish", lambda _: self.activate(profile, device, ap)), None))
+            elif password:
+                self.store_password(profile, password, lambda: self.activate(profile, device, ap, fresh=True))
+            else:
+                self.activate(profile, device, ap, fresh=not profiles)
+        else:
+            raise RequestError("Unknown network action.")
+
+    def read_input(self, source, condition):
+        data = os.read(source, MAX_REQUEST)
+        if not data:
+            if self.pending:
+                self.pending["cancel"].cancel()
+            self.loop.quit()
+            return GLib.SOURCE_REMOVE
+        self.input_buffer.extend(data)
+        while b"\n" in self.input_buffer:
+            line, _, rest = self.input_buffer.partition(b"\n")
+            self.input_buffer = bytearray(rest)
+            if self.discard_input:
+                self.discard_input = False
+                line.clear()
+                continue
+            previous_pending = self.pending
+            try:
+                self.handle(parse_request(line))
+                emit({"type": "ack"})
+            except (ValueError, TypeError, GLib.Error) as error:
+                # Do not include the request, which can contain a password.
+                if self.pending and self.pending is not previous_pending:
+                    self.finish_operation(str(error) if isinstance(error, RequestError) else "The network request could not be completed.")
+                else:
+                    emit({"type": "error", "message": str(error) if isinstance(error, RequestError) else "The network request could not be completed."})
+            finally:
+                line.clear()
+        if len(self.input_buffer) > MAX_REQUEST:
+            self.input_buffer.clear()
+            if not self.discard_input:
+                emit({"type": "error", "message": "Invalid network request."})
+            self.discard_input = True
+        return GLib.SOURCE_CONTINUE
+
+
+def main():
+    global NM, GLib, Gio, keyring
+    if os.geteuid() == 0:
+        emit({"type": "error", "message": "Run the network popup as your desktop user."})
+        return 1
+    os.umask(0o077)
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+    for name in ("LIBNM_CLIENT_DEBUG", "G_MESSAGES_DEBUG", "G_DBUS_DEBUG", "LIBSECRET_DEBUG"):
+        os.environ.pop(name, None)
+    sys.dont_write_bytecode = True
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--snapshot", action="store_true", help="Print current state and exit without changing connections")
+    parser.add_argument("--include-private", action="store_true", help="Include network names and addresses in --snapshot output")
+    parser.add_argument("--check-keyring", action="store_true", help="Check the default keyring encryption and permissions without reading passwords")
+    options = parser.parse_args()
+    if options.include_private and not options.snapshot:
+        parser.error("--include-private requires --snapshot")
+    try:
+        import gi
+        gi.require_version("NM", "1.0")
+        from gi.repository import NM, GLib, Gio
+        module_path = Path(__file__).resolve().parent.parent / "lib/dotfiles/network_keyring.py"
+        spec = importlib.util.spec_from_file_location("network_keyring", module_path)
+        keyring = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(keyring)
+    except (ImportError, ValueError, OSError):
+        emit({"type": "error", "message": "Install the network popup and its GNOME Keyring dependencies first."})
+        return 1
+    try:
+        loop = GLib.MainLoop()
+        if options.check_keyring:
+            outcome = [1]
+            cancel = Gio.Cancellable()
+            bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+            agent_ready = bus.call_sync(keyring.AGENT_NAME, keyring.AGENT_PATH,
+                keyring.AGENT_NAME, "Ready", None, GLib.VariantType.new("(b)"),
+                Gio.DBusCallFlags.NONE, 15000, None).unpack()[0]
+            if not agent_ready:
+                emit({"type": "keyring", "agentReady": False, "encrypted": False,
+                      "message": "The network keyring agent is not ready."})
+                return 1
+
+            def checked(collection, error):
+                emit({"type": "keyring", "agentReady": True, "encrypted": not bool(error),
+                      "message": str(error) if error else "Encrypted keyring is ready."})
+                outcome[0] = 1 if error else 0
+                loop.quit()
+
+            keyring.Keyring().collection(checked, cancel, allow_unlock=False)
+            def expired():
+                cancel.cancel()
+                checked(None, keyring.KeyringError("Keyring check timed out."))
+                return GLib.SOURCE_REMOVE
+            timeout = GLib.timeout_add_seconds(15, expired)
+            loop.run()
+            if GLib.MainContext.default().find_source_by_id(timeout):
+                GLib.source_remove(timeout)
+            return outcome[0]
+        service = NetworkPopup(NM.Client.new(None), loop)
+        service.diagnostic = options.snapshot
+        service.include_private = service.details_enabled = options.include_private
+        service.publish()
+        if options.snapshot:
+            return 0
+        service.ensure_keyring_agent()
+        GLib.io_add_watch(sys.stdin.fileno(), GLib.IO_IN | GLib.IO_HUP, service.read_input)
+        # Reuse fresh scan results; a scan failure must not stop the popup.
+        service.scan_if_stale()
+        loop.run()
+        return 0
+    except (GLib.Error, OSError):
+        emit({"type": "error", "message": "Could not start the network popup service."})
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

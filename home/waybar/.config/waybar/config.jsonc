@@ -74,7 +74,8 @@
         "format-disconnected": "<span font_family=\"Symbols Nerd Font\">󰖪</span>",
         "tooltip-format-wifi": "{essid}\n{signalStrength}%\n{ipaddr}",
         "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
-        "tooltip-format-disconnected": "Sin conexión"
+        "tooltip-format-disconnected": "Disconnected",
+        "on-click": "~/.local/bin/network-popup"
     },
 
     "battery": {

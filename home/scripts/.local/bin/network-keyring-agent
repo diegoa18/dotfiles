@@ -1,0 +1,178 @@
+#!/usr/bin/python3 -I
+"""Session secret agent: only NetworkManager may request Wi-Fi credentials."""
+
+import importlib.util
+import os
+from pathlib import Path
+import sys
+
+for name in ("LIBNM_CLIENT_DEBUG", "G_MESSAGES_DEBUG", "G_DBUS_DEBUG", "LIBSECRET_DEBUG"):
+    os.environ.pop(name, None)
+sys.dont_write_bytecode = True
+module_path = Path(__file__).resolve().parent.parent / "lib/dotfiles/network_keyring.py"
+spec = importlib.util.spec_from_file_location("network_keyring", module_path)
+keyring = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(keyring)
+keyring.protect_process()
+
+import gi
+
+gi.require_version("NM", "1.0")
+from gi.repository import Gio, GLib, NM
+
+
+SECRET_INTERFACE = "org.freedesktop.NetworkManager.SecretAgent"
+SECRET_PATH = "/org/freedesktop/NetworkManager/SecretAgent"
+SECRET_XML = """<node><interface name="org.freedesktop.NetworkManager.SecretAgent">
+<method name="GetSecrets"><arg type="a{sa{sv}}" direction="in"/><arg type="o" direction="in"/>
+<arg type="s" direction="in"/><arg type="as" direction="in"/><arg type="u" direction="in"/>
+<arg type="a{sa{sv}}" direction="out"/></method>
+<method name="CancelGetSecrets"><arg type="o" direction="in"/><arg type="s" direction="in"/></method>
+<method name="SaveSecrets"><arg type="a{sa{sv}}" direction="in"/><arg type="o" direction="in"/></method>
+<method name="DeleteSecrets"><arg type="a{sa{sv}}" direction="in"/><arg type="o" direction="in"/></method>
+</interface></node>"""
+STATUS_XML = '<node><interface name="' + keyring.AGENT_NAME + '"><method name="Ready"><arg type="b" direction="out"/></method></interface></node>'
+
+
+class Agent:
+    def __init__(self, loop):
+        self.loop = loop
+        self.client = NM.Client.new(None)
+        self.system_bus = self.client.get_dbus_connection()
+        self.store = keyring.Keyring()
+        self.registered = False
+        self.pending = {}
+        self.waiting = []
+        self.retry_source = 0
+        self.system_bus.register_object(SECRET_PATH,
+            Gio.DBusNodeInfo.new_for_xml(SECRET_XML).interfaces[0], self.request, None, None)
+        self.client.connect("notify::dbus-name-owner", self.register)
+
+    def status(self, _bus, _sender, _path, _interface, _method, _parameters, invocation):
+        if self.registered or not self.client.get_nm_running():
+            invocation.return_value(GLib.Variant("(b)", (self.registered,)))
+        else:
+            self.waiting.append(invocation)
+
+    def registered_result(self, bus, result, _data):
+        try:
+            bus.call_finish(result)
+            self.registered = True
+        except GLib.Error:
+            self.registered = False
+            if not self.retry_source:
+                self.retry_source = GLib.timeout_add_seconds(5, self.register)
+        for invocation in self.waiting:
+            invocation.return_value(GLib.Variant("(b)", (self.registered,)))
+        self.waiting.clear()
+
+    def register(self, *_):
+        self.retry_source = 0
+        self.registered = False
+        if self.client.get_nm_running():
+            self.system_bus.call("org.freedesktop.NetworkManager",
+                "/org/freedesktop/NetworkManager/AgentManager",
+                "org.freedesktop.NetworkManager.AgentManager", "RegisterWithCapabilities",
+                GLib.Variant("(su)", (keyring.AGENT_NAME, 0)), None,
+                Gio.DBusCallFlags.NONE, 5000, None, self.registered_result, None)
+        return GLib.SOURCE_REMOVE
+
+    @staticmethod
+    def error(invocation, code="NoSecrets"):
+        invocation.return_dbus_error(SECRET_INTERFACE + "." + code, "Wi-Fi credentials are unavailable.")
+
+    def request(self, _bus, sender, _path, _interface, method, parameters, invocation):
+        # Compare the unique name, never a caller-provided identifier or UID.
+        owner = self.client.get_dbus_name_owner()
+        if not owner or sender != owner:
+            self.error(invocation, "PermissionDenied")
+            return
+        values = parameters.unpack()
+        if method == "CancelGetSecrets":
+            token = self.pending.pop(tuple(values), None)
+            if token:
+                token[0].cancel()
+                self.error(token[1], "AgentCanceled")
+            invocation.return_value(GLib.Variant("()", ()))
+            return
+        settings, path = values[:2]
+        connection = settings.get("connection", {})
+        security = settings.get(keyring.SETTING, {})
+        try:
+            tags = keyring.attributes(connection.get("uuid"))
+        except keyring.KeyringError:
+            self.error(invocation)
+            return
+        if (connection.get("type") != "802-11-wireless"
+                or security.get("key-mgmt") not in ("wpa-psk", "sae")
+                or not int(security.get("psk-flags", 0)) & int(NM.SettingSecretFlags.AGENT_OWNED)):
+            self.error(invocation)
+            return
+        cancel = Gio.Cancellable()
+        if method == "GetSecrets":
+            setting, _hints, flags = values[2:]
+            if setting != keyring.SETTING or flags & int(NM.SecretAgentGetSecretsFlags.REQUEST_NEW):
+                self.error(invocation)
+                return
+            token = (cancel, invocation)
+            request_key = (path, setting)
+            old = self.pending.pop(request_key, None)
+            if old:
+                old[0].cancel()
+                self.error(old[1], "AgentCanceled")
+            self.pending[request_key] = token
+
+            def found(password, error):
+                if self.pending.get(request_key) is not token:
+                    return
+                self.pending.pop(request_key)
+                if error or not password:
+                    self.error(invocation)
+                else:
+                    invocation.return_value(GLib.Variant("(a{sa{sv}})",
+                        ({keyring.SETTING: {"psk": GLib.Variant("s", password)}},)))
+
+            self.store.lookup(tags["connection-uuid"], found, cancel,
+                              bool(flags & int(NM.SecretAgentGetSecretsFlags.ALLOW_INTERACTION)))
+        else:
+            def completed(error):
+                if error:
+                    self.error(invocation)
+                else:
+                    invocation.return_value(GLib.Variant("()", ()))
+
+            if method == "SaveSecrets":
+                password = security.get("psk")
+                if not isinstance(password, str) or not 0 < len(password.encode("utf-8")) <= 256:
+                    self.error(invocation)
+                    return
+                self.store.store(tags["connection-uuid"], password, completed, cancel)
+            elif method == "DeleteSecrets":
+                self.store.delete(tags["connection-uuid"], completed, cancel)
+
+
+def main():
+    if os.geteuid() == 0:
+        print("Run the network keyring agent as your desktop user.", file=sys.stderr)
+        return 1
+    loop = GLib.MainLoop()
+    agents = []
+
+    def acquired(bus, _name):
+        agent = Agent(loop)
+        agents.append(agent)
+        bus.register_object(keyring.AGENT_PATH,
+            Gio.DBusNodeInfo.new_for_xml(STATUS_XML).interfaces[0], agent.status, None, None)
+        agent.register()
+
+    owner_id = Gio.bus_own_name(Gio.BusType.SESSION, keyring.AGENT_NAME,
+        Gio.BusNameOwnerFlags.NONE, None, acquired, lambda *_: loop.quit())
+    try:
+        loop.run()
+    finally:
+        Gio.bus_unown_name(owner_id)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

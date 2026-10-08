@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -euo pipefail
+
+CONFIG="$HOME/.config/quickshell/network-popup.qml"
+SERVICE="$HOME/.local/bin/network-popup-service"
+
+command -v quickshell >/dev/null 2>&1 || {
+    printf 'Error: quickshell is not available in PATH.\n' >&2
+    exit 1
+}
+
+if [ ! -r "$CONFIG" ] || [ ! -x "$SERVICE" ]; then
+    printf 'Error: network popup files are missing; run install/stow.sh.\n' >&2
+    exit 1
+fi
+
+if quickshell kill -p "$CONFIG" >/dev/null 2>&1; then
+    exit 0
+fi
+
+exec quickshell --no-duplicate --daemonize --path "$CONFIG"
