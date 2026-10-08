@@ -70,7 +70,7 @@ Column {
                             wrapMode: Text.Wrap
                             maximumLineCount: 2
                             elide: Text.ElideRight
-                            color: !output.enabled ? "#8a8a8a"
+                            color: !output.enabled ? "#b9c0cc"
                                 : output.current ? "#8aadf4" : "#ffffff"
                             font.pixelSize: 12
                         }
@@ -102,7 +102,7 @@ Column {
                 visible: selector.nodes.length === 0
                 width: parent.width
                 text: selector.enabled ? "No audio outputs" : "Loading audio…"
-                color: "#a5adcb"
+                color: "#e2e5ed"
                 font.pixelSize: 12
             }
         }

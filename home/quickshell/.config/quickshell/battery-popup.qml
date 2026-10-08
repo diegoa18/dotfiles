@@ -61,7 +61,7 @@ WaybarPopup {
             text: parent.label
             textFormat: Text.PlainText
             wrapMode: Text.Wrap
-            color: "#a5adcb"
+            color: "#e2e5ed"
             font.pixelSize: 12
         }
         Text {
@@ -222,7 +222,7 @@ WaybarPopup {
                                     Text {
                                         text: profileButton.modelData.hint
                                         font.pixelSize: 11
-                                        color: "#a5adcb"
+                                        color: "#e2e5ed"
                                     }
                                 }
                                 Text {

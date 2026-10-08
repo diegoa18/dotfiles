@@ -165,7 +165,7 @@ WaybarPopup {
                                 text: Pipewire.ready ? "No apps playing audio" : "Loading audio…"
                                 textFormat: Text.PlainText
                                 wrapMode: Text.WordWrap
-                                color: "#a5adcb"
+                                color: "#e2e5ed"
                                 font.pixelSize: 12
                             }
                         }
