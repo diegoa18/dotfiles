@@ -21,6 +21,7 @@ STOW_PACKAGES=(
     rofi
     scripts
     waybar
+    zsh
 )
 
 
