@@ -26,14 +26,12 @@ window#waybar.floating {
     background: rgba(8, 8, 8, 0.35);
 }
 
-#custom-user {
-    padding: 0 14px;
-}
-
+#custom-user,
 #clock {
     padding: 0 14px;
 }
 
+#mpris,
 #pulseaudio,
 #network,
 #battery,
@@ -43,16 +41,6 @@ window#waybar.floating {
 
 #custom-power {
     padding-right: 14px;
-}
-
-#custom-mpris-artist {
-    padding-left: 8px;
-    padding-right: 4px;
-}
-
-#custom-mpris-title {
-    padding-left: 0;
-    padding-right: 10px;
 }
 
 /* ============================================================
@@ -89,10 +77,7 @@ menuitem:active {
     color: #8aadf4;
 }
 
-menuitem label {
-    color: #cad3f5;
-}
-
+menuitem label,
 menuitem:hover label {
     color: #cad3f5;
 }
