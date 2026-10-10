@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.Mpris
@@ -31,7 +32,6 @@ WaybarPopup {
     readonly property bool hasArtwork:
         root.player !== null && root.player.trackArtUrl !== ""
 
-    // Keep the same player when it pauses, even if another player is playing.
     function selectPlayer() {
         const players = root.availablePlayers
 
@@ -60,7 +60,6 @@ WaybarPopup {
     function previousOrRestart() {
         const player = root.player
 
-        // Read the current position at click time, rather than a cached value.
         if (root.canRestartTrack(player))
             player.position = 0
         else if (player && player.canGoPrevious)
@@ -97,7 +96,6 @@ WaybarPopup {
         onTriggered: Qt.quit()
     }
 
-    // Position does not notify continuously. Refresh only while it is moving.
     Timer {
         interval: 1000
         repeat: true
@@ -184,24 +182,19 @@ WaybarPopup {
                 }
             }
 
-            Text {
+            MarqueeText {
                 width: parent.width
 
                 text: root.player
                     ? (root.player.trackTitle || "Unknown Title")
                     : "No active player"
 
-                textFormat: Text.PlainText
                 color: "#ffffff"
-
                 font.pixelSize: 16
                 font.bold: true
-
-                horizontalAlignment: Text.AlignHCenter
-                elide: Text.ElideRight
             }
 
-            Text {
+            MarqueeText {
                 width: parent.width
                 visible: root.player !== null
 
@@ -209,12 +202,8 @@ WaybarPopup {
                     ? (root.player.trackArtist || "Unknown Artist")
                     : ""
 
-                textFormat: Text.PlainText
                 color: "#ffffff"
                 font.pixelSize: 13
-
-                horizontalAlignment: Text.AlignHCenter
-                elide: Text.ElideRight
             }
 
             Row {
@@ -289,5 +278,76 @@ WaybarPopup {
         ToolTip.visible: control.hovered
         ToolTip.delay: 400
         ToolTip.text: control.hint
+    }
+
+    component MarqueeText: Item {
+        id: control
+        required property string text
+        property font font
+        property color color: "#ffffff"
+        property int delay: 1000
+
+        implicitHeight: mainText.implicitHeight
+        clip: true
+
+        readonly property bool tooWide: mainText.implicitWidth > width
+
+        Item {
+            id: maskingSource
+            anchors.fill: parent
+            visible: !control.tooWide
+
+            Text {
+                id: mainText
+                text: control.text
+                font: control.font
+                color: control.color
+                textFormat: Text.PlainText
+                anchors.verticalCenter: parent.verticalCenter
+
+                // Centrado si cabe, a la izquierda para empezar a scrollear si es largo
+                x: control.tooWide ? 0 : (control.width - implicitWidth) / 2
+
+                SequentialAnimation on x {
+                    running: control.tooWide && control.visible
+                    loops: Animation.Infinite
+
+                    PauseAnimation { duration: control.delay }
+                    NumberAnimation {
+                        from: 0
+                        to: control.width - mainText.implicitWidth
+                        // ~30 milisegundos por pixel (fluido y calmado)
+                        duration: Math.max(0, mainText.implicitWidth - control.width) * 30
+                    }
+                    PauseAnimation { duration: control.delay }
+                    NumberAnimation {
+                        from: control.width - mainText.implicitWidth
+                        to: 0
+                        duration: Math.max(0, mainText.implicitWidth - control.width) * 30
+                    }
+                }
+            }
+        }
+
+        LinearGradient {
+            id: gradientMask
+            anchors.fill: parent
+            start: Qt.point(0, 0)
+            end: Qt.point(width, 0)
+            visible: false
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.05; color: "black" }
+                GradientStop { position: 0.95; color: "black" }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+        }
+
+        OpacityMask {
+            anchors.fill: parent
+            source: maskingSource
+            maskSource: gradientMask
+            visible: control.tooWide
+        }
     }
 }
