@@ -1,6 +1,8 @@
 #!/bin/bash
 
-STATE="${XDG_RUNTIME_DIR}/hyprsunset-night"
+set -euo pipefail
+
+STATE="${XDG_RUNTIME_DIR:-/tmp}/hyprsunset-night"
 
 if [ -f "$STATE" ]; then
     hyprctl hyprsunset identity

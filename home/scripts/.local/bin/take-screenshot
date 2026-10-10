@@ -1,8 +1,9 @@
 #!/bin/bash
 
-set -u
+set -euo pipefail
 
-SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
+XDG_PICTURES_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}"
+SCREENSHOT_DIR="$XDG_PICTURES_DIR/Screenshots"
 
 mkdir -p "$SCREENSHOT_DIR"
 
