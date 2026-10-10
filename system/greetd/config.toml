@@ -2,5 +2,5 @@
 vt = 7
 
 [default_session]
-command = "/usr/bin/tuigreet --time --cmd /usr/bin/start-hyprland"
+command = "/usr/bin/tuigreet --time --time-format '%A %d | %B · %H:%M' --asterisks --greeting 'Welcome to Hyprland' --theme 'border=blue,text=lightgray,prompt=white,time=lightgray,action=lightblue,button=lightblue,container=black,input=white' --cmd /usr/bin/start-hyprland"
 user = "_greetd"
