@@ -25,6 +25,8 @@
         "exec": "id -un",
         "interval": "once",
         "format": "{}",
+        "max-length": 15,
+        "ellipsize": "end",
         "tooltip": false,
         "on-click": "~/.local/bin/system-info-popup"
     },
@@ -33,10 +35,9 @@
         "format": "♪ {artist} · {title}",
         "format-paused": "⏸ {artist} · {title}",
         "format-stopped": "",
-        "max-length": 70,
+        "max-length": 40,
         "ellipsize": "end",
         "tooltip-format": "{player}\n{artist} · {title}",
-
         "on-click": "~/.local/bin/mpris-popup",
         "on-click-right": "playerctl play-pause"
     },
@@ -51,6 +52,7 @@
         "locale": "es_CL.UTF-8",
         "on-click": "~/.local/bin/calendar-popup"
     },
+
     "pulseaudio": {
         "format": "{icon} {volume}%",
         "format-muted": "<span font_family=\"Symbols Nerd Font\">󰝟</span> Muted",
@@ -72,6 +74,8 @@
         "format-wifi": "<span font_family=\"Symbols Nerd Font\"></span>  {essid}",
         "format-ethernet": "<span font_family=\"Symbols Nerd Font\">󰈀</span>  {ifname}",
         "format-disconnected": "<span font_family=\"Symbols Nerd Font\">󰖪</span>",
+        "max-length": 20,
+        "ellipsize": "end",
         "tooltip-format-wifi": "{essid}\n{signalStrength}%\n{ipaddr}",
         "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
         "tooltip-format-disconnected": "Disconnected",
