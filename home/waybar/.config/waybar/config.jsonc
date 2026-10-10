@@ -49,7 +49,6 @@
     "clock": {
         "format": "{:%A %d | %B · %H:%M}",
         "tooltip": false,
-        "locale": "es_CL.UTF-8",
         "on-click": "~/.local/bin/calendar-popup"
     },
 

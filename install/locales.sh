@@ -10,8 +10,17 @@ SCRIPT_DIR="$(
 # shellcheck source=lib/common.sh
 . "$SCRIPT_DIR/lib/common.sh"
 
-DESKTOP_LOCALE="es_CL.UTF-8"
 LOCALE_CONFIG="/etc/locale.gen"
+
+if [ -z "${LANG:-}" ] || [ "$LANG" = "C" ] || [ "$LANG" = "POSIX" ]; then
+    if [ -r /etc/default/locale ]; then
+        # shellcheck source=/dev/null
+        . /etc/default/locale
+    fi
+fi
+
+BASE_LOCALE="$(echo "${LANG:-en_US.UTF-8}" | cut -d'.' -f1)"
+DESKTOP_LOCALE="${BASE_LOCALE}.UTF-8"
 
 locale_is_selected() {
     awk -v name="$DESKTOP_LOCALE" '
@@ -22,8 +31,8 @@ locale_is_selected() {
 
 locale_is_available() {
     LC_ALL=C locale -a |
-        awk '
-            /^es_CL[.](utf8|UTF-8)$/ { found = 1 }
+        awk -v base="$BASE_LOCALE" '
+            $0 ~ ("^" base "[.](utf8|UTF-8)$") { found = 1 }
             END { exit !found }
         '
 }
