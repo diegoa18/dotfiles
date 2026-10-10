@@ -34,3 +34,4 @@ wl-clipboard
 xdg-desktop-portal-gtk
 xwayland
 fonts-jetbrains-mono
+qml6-module-qt5compat-graphicaleffects
