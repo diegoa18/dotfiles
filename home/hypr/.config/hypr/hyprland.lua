@@ -1,4 +1,5 @@
 local mainMod = "SUPER"
+local kbd_layout = os.getenv("XKB_DEFAULT_LAYOUT") or os.getenv("HYPRLAND_KB_LAYOUT") or "latam"
 
 hl.config({
     general = {
@@ -23,11 +24,11 @@ hl.config({
             passes = 3,
             new_optimizations = true,
             popups = true,
-    }
+        }
     },
 
     input = {
-        kb_layout = "latam",
+        kb_layout = kbd_layout,
         touchpad = {
             natural_scroll = true,
         },
