@@ -15,6 +15,7 @@ STOW_DIR="$DOTFILES_ROOT/home"
 STOW_PACKAGES=(
     dunst
     ghostty
+    git
     hypr
     opencode
     quickshell

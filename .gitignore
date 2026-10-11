@@ -22,3 +22,6 @@ home/opencode/.config/opencode/package-lock.json
 
 # Local reproducibility audits
 repro-audit*.txt
+
+# Local Git identity
+.gitconfig.local

@@ -1,0 +1,19 @@
+[include]
+	# Carga la identidad y credenciales locales (fuera del repositorio)
+	path = ~/.gitconfig.local
+
+[core]
+	autocrlf = input
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = false
+
+[alias]
+	st = status -sb
+	co = checkout
+	br = branch
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	amend = commit --amend --no-edit
