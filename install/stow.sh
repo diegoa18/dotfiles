@@ -22,6 +22,7 @@ STOW_PACKAGES=(
     scripts
     waybar
     zsh
+    zsh
 )
 
 
