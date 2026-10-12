@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -euo pipefail
+
+CONFIG_FILE="$HOME/.config/waybar/config.jsonc"
+
+if ! command -v jq >/dev/null 2>&1; then
+    echo "Error: jq no está instalado." >&2
+    exit 1
+fi
+
+if [ "$#" -lt 2 ]; then
+    echo "Uso: $(basename "$0") <pin|unpin|toggle> <module_name>" >&2
+    exit 1
+fi
+
+ACTION="$1"
+MODULE="$2"
+TMP_FILE="${CONFIG_FILE}.tmp"
+
+# Determinar si el módulo ya existe en la barra
+HAS_MODULE=$(jq -e ".[\"modules-right\"] | index(\"$MODULE\")" "$CONFIG_FILE" >/dev/null && echo "true" || echo "false")
+
+case "$ACTION" in
+    pin)
+        [ "$HAS_MODULE" = "true" ] && exit 0
+        jq ".[\"modules-right\"] as \$arr | (\$arr | index(\"custom/power\")) as \$idx | if \$idx then .[\"modules-right\"] = \$arr[:\$idx] + [\"$MODULE\"] + \$arr[\$idx:] else .[\"modules-right\"] += [\"$MODULE\"] end" "$CONFIG_FILE" > "$TMP_FILE"
+        ;;
+    unpin)
+        [ "$HAS_MODULE" = "false" ] && exit 0
+        jq ".[\"modules-right\"] -= [\"$MODULE\"]" "$CONFIG_FILE" > "$TMP_FILE"
+        ;;
+    toggle)
+        if [ "$HAS_MODULE" = "true" ]; then
+            jq ".[\"modules-right\"] -= [\"$MODULE\"]" "$CONFIG_FILE" > "$TMP_FILE"
+        else
+            jq ".[\"modules-right\"] as \$arr | (\$arr | index(\"custom/power\")) as \$idx | if \$idx then .[\"modules-right\"] = \$arr[:\$idx] + [\"$MODULE\"] + \$arr[\$idx:] else .[\"modules-right\"] += [\"$MODULE\"] end" "$CONFIG_FILE" > "$TMP_FILE"
+        fi
+        ;;
+    *)
+        echo "Acción no válida: $ACTION. Usa pin, unpin o toggle." >&2
+        exit 1
+        ;;
+esac
+
+mv "$TMP_FILE" "$CONFIG_FILE"
+killall -USR2 waybar

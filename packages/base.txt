@@ -1,28 +1,31 @@
-# Debian 13 (trixie) packages required by the desktop.
-# One package per line. Keep this list limited to runtime/deployment
-# dependencies actually used by the dotfiles.
 
 brightnessctl
 cliphist
+# Debian 13 (trixie) packages required by the desktop.
+# dependencies actually used by the dotfiles.
 dunst
 fastfetch
+fonts-jetbrains-mono
 gir1.2-nm-1.0
 gir1.2-secret-1
 gnome-keyring
 greetd
 grim
+jq
 libnotify-bin
 libpam-gnome-keyring
 locales
 mate-polkit
 nautilus
 network-manager
+# One package per line. Keep this list limited to runtime/deployment
 pipewire-audio
 playerctl
 power-profiles-daemon
 procps
 python3
 python3-gi
+qml6-module-qt5compat-graphicaleffects
 seahorse
 slurp
 stow
@@ -33,5 +36,3 @@ wireplumber
 wl-clipboard
 xdg-desktop-portal-gtk
 xwayland
-fonts-jetbrains-mono
-qml6-module-qt5compat-graphicaleffects
