@@ -35,10 +35,12 @@ window#waybar.floating {
 #pulseaudio,
 #network,
 #battery,
+#custom-controlcenter,
 #custom-power {
     padding: 0 10px;
 }
 
+#custom-controlcenter,
 #custom-power {
     padding-right: 14px;
 }

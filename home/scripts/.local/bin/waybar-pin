@@ -43,5 +43,5 @@ case "$ACTION" in
         ;;
 esac
 
-mv "$TMP_FILE" "$CONFIG_FILE"
+cat "$TMP_FILE" > "$CONFIG_FILE" && rm "$TMP_FILE"
 killall -USR2 waybar
