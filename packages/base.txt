@@ -1,4 +1,5 @@
 
+blueman
 bluez
 brightnessctl
 cliphist
