@@ -2,6 +2,7 @@
 blueman
 bluez
 brightnessctl
+brightnessctl
 cliphist
 # Debian 13 (trixie) packages required by the desktop.
 # dependencies actually used by the dotfiles.
@@ -36,5 +37,6 @@ upower
 waybar
 wireplumber
 wl-clipboard
+wlsunset
 xdg-desktop-portal-gtk
 xwayland
