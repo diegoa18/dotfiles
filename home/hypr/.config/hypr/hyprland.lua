@@ -69,7 +69,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("quickshell -c default")
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
-    hl.exec_cmd("hyprsunset")
+    hl.exec_cmd("~/.local/bin/screen-manager set-nightlight off")
 end)
 
 -- ============================================================
@@ -304,7 +304,7 @@ hl.bind(
 
 hl.bind(
     "SUPER + N",
-    hl.dsp.exec_cmd("~/.local/bin/toggle-night-light")
+    hl.dsp.exec_cmd("~/.local/bin/screen-manager toggle-nightlight")
 )
 
 hl.bind(

@@ -1,0 +1,50 @@
+#!/bin/bash
+set -euo pipefail
+
+ACTION="${1:-info}"
+NIGHT_LIGHT_FILE="/tmp/night_light_temp"
+
+case "$ACTION" in
+    info)
+        MAX=$(brightnessctl m)
+        CURRENT=$(brightnessctl g)
+        PERCENT=$(( CURRENT * 100 / MAX ))
+        
+        if pgrep -x "wlsunset" > /dev/null; then
+            NL_STATE=$(cat "$NIGHT_LIGHT_FILE" 2>/dev/null || echo "4500")
+        else
+            NL_STATE="Off"
+        fi
+        
+        echo "$PERCENT:$NL_STATE"
+        ;;
+    set-brightness)
+        VAL="$2"
+        brightnessctl set "${VAL}%" >/dev/null
+        ;;
+    set-nightlight)
+        VAL="$2"
+        killall wlsunset || true
+        
+        if [ "$VAL" != "off" ]; then
+            echo "$VAL" > "$NIGHT_LIGHT_FILE"
+            HIGH=$(( VAL + 1 ))
+            wlsunset -t "$VAL" -T "$HIGH" -S 12:00 -s 11:59 >/dev/null 2>&1 &
+        else
+            rm -f "$NIGHT_LIGHT_FILE"
+        fi
+        ;;
+    toggle-nightlight)
+        if pgrep -x "wlsunset" > /dev/null; then
+            # Si está encendido, apagar
+            "$0" set-nightlight off
+        else
+            # Si está apagado, encender a 4500K por defecto
+            "$0" set-nightlight 4500
+        fi
+        ;;
+    *)
+        echo "Uso: screen-manager {info|set-brightness <%>|set-nightlight <kelvin|off>|toggle-nightlight}"
+        exit 1
+        ;;
+esac
