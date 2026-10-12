@@ -66,7 +66,7 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=246'
 alias ls="eza --icons --git --group-directories-first"
 alias ll="eza -l --icons --git --group-directories-first"
 alias la="eza -la --icons --git --group-directories-first"
-alias cat="batcat"
+alias cat="batcat --paging=never --theme=Catppuccin-Mocha"
 alias tree="eza -l --tree --git --icons --no-permissions --no-filesize --no-user --no-time"
 
 # fzf: Integración de historial (Ctrl+R)
