@@ -13,9 +13,6 @@
   ],
   "modules-right": [
     "custom/controlcenter",
-    "pulseaudio",
-    "network",
-    "battery",
     "custom/power"
   ],
   "custom/user": {
@@ -64,7 +61,8 @@
     "max-volume": 100,
     "tooltip-format": "{desc}\n{volume}%",
     "on-click": "~/.local/bin/audio-popup",
-    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-middle": "~/.local/bin/waybar-pin unpin pulseaudio"
   },
   "network": {
     "format-wifi": "<span font_family=\"Symbols Nerd Font\"></span>  {essid}",
@@ -75,7 +73,8 @@
     "tooltip-format-wifi": "{essid}\n{signalStrength}%\n{ipaddr}",
     "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
     "tooltip-format-disconnected": "Disconnected",
-    "on-click": "~/.local/bin/network-popup"
+    "on-click": "~/.local/bin/network-popup",
+    "on-click-middle": "~/.local/bin/waybar-pin unpin network"
   },
   "battery": {
     "format": "{icon} {capacity}%",
@@ -90,7 +89,8 @@
       "<span font_family=\"Symbols Nerd Font\"></span>"
     ],
     "tooltip-format": "{capacity}%\n{timeTo}\n{power:.1f} W",
-    "on-click": "~/.local/bin/battery-popup"
+    "on-click": "~/.local/bin/battery-popup",
+    "on-click-middle": "~/.local/bin/waybar-pin unpin battery"
   },
   "custom/power": {
     "format": "⏻",
