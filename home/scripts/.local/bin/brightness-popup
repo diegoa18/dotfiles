@@ -1,0 +1,25 @@
+#!/bin/bash
+set -euo pipefail
+
+CONFIG="$HOME/.config/quickshell/brightness-popup.qml"
+DATA_FILE="$HOME/.config/quickshell/bright-data.js"
+
+if quickshell kill -p "$CONFIG" >/dev/null 2>&1; then
+    exit 0
+fi
+
+INFO=$(~/.local/bin/screen-manager info)
+BRIGHT_PCT=$(echo "$INFO" | cut -d':' -f1)
+NIGHT_TEMP=$(echo "$INFO" | cut -d':' -f2)
+
+if [ "$NIGHT_TEMP" = "Off" ]; then
+    NIGHT_TEMP="6500"
+fi
+
+cat << JS_EOF > "$DATA_FILE"
+.pragma library
+var currentBrightness = $BRIGHT_PCT;
+var currentNightTemp = $NIGHT_TEMP;
+JS_EOF
+
+exec "$(dirname "${BASH_SOURCE[0]}")/waybar-popup" "$CONFIG"

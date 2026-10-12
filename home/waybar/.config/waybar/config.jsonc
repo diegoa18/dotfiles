@@ -12,7 +12,10 @@
     "clock"
   ],
   "modules-right": [
-    "custom/bluetooth",
+    "pulseaudio",
+    "network",
+    "battery",
+    "custom/brightness",
     "custom/controlcenter",
     "custom/power"
   ],
@@ -101,11 +104,26 @@
   "custom/bluetooth": {
     "exec": "~/.local/bin/bt-manager waybar",
     "return-type": "json",
-    "interval": 2,
+    "interval": "once",
     "format": "<span font_family=\"Symbols Nerd Font\"></span> {}",
     "on-click": "~/.local/bin/bluetooth-popup",
     "on-click-right": "~/.local/bin/bt-manager toggle",
     "on-click-middle": "~/.local/bin/waybar-pin unpin custom/bluetooth",
+    "tooltip": true,
+    "signal": 8
+  },
+  "backlight": {
+    "device": "intel_backlight",
+    "format": "<span font_family=\"Symbols Nerd Font\">{icon}</span> {percent}%",
+    "format-icons": [
+      "󰃞",
+      "󰃟",
+      "󰃠"
+    ],
+    "on-scroll-up": "brightnessctl set +5%",
+    "on-scroll-down": "brightnessctl set 5%-",
+    "on-click": "~/.local/bin/brightness-popup",
+    "on-click-middle": "~/.local/bin/waybar-pin unpin backlight",
     "tooltip": true
   }
 }

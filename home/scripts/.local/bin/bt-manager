@@ -10,8 +10,8 @@ case "$ACTION" in
         else
             bluetoothctl power on
         fi
-        # Forzar recarga visual inmediata de Waybar
-        killall -SIGUSR2 waybar
+        # Enviar señal específica solo al módulo de Bluetooth (Signal 8)
+        pkill -RTMIN+8 waybar
         ;;
     info)
         if ! bluetoothctl show | grep -q "Powered: yes"; then

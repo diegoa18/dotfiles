@@ -8,11 +8,9 @@ if quickshell kill -p "$CONFIG" >/dev/null 2>&1; then
     exit 0
 fi
 
-# 1. Red: OPTIMIZADO (Lee la RAM, no despierta el hardware)
 NET_INFO=$(nmcli -t -f NAME,TYPE connection show --active 2>/dev/null | awk -F: '$2 !~ /loopback/ {print $1}' | head -n 1 || true)
 [ -z "$NET_INFO" ] && NET_INFO="Disconnected"
 
-# 2. Audio: Instantáneo (lee directo de pipewire/wireplumber)
 VOL_INFO=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || echo "0.00")
 if echo "$VOL_INFO" | grep -q "MUTED"; then
     AUDIO_TEXT="Muted"
@@ -21,12 +19,16 @@ else
     AUDIO_TEXT="${AUDIO_TEXT}%"
 fi
 
-# 3. Batería: Instantáneo (lee archivo de texto plano del kernel)
 BAT_INFO=$(cat /sys/class/power_supply/BAT*/capacity 2>/dev/null | head -n 1 || echo "100")
 BAT_TEXT="${BAT_INFO}%"
 
-# 4. Bluetooth: Instantáneo
 BT_INFO=$(~/.local/bin/bt-manager info)
+
+# Brillo nativo
+MAX=$(brightnessctl m)
+CURRENT=$(brightnessctl g)
+PERCENT=$(( CURRENT * 100 / MAX ))
+BRIGHT_TEXT="${PERCENT}%"
 
 cat << JS_EOF > "$DATA_FILE"
 .pragma library
@@ -34,6 +36,7 @@ var network = "$NET_INFO";
 var audio = "$AUDIO_TEXT";
 var battery = "$BAT_TEXT";
 var bluetooth = "$BT_INFO";
+var brightness = "$BRIGHT_TEXT";
 JS_EOF
 
 exec "$(dirname "${BASH_SOURCE[0]}")/waybar-popup" "$CONFIG"

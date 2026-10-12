@@ -28,3 +28,6 @@ repro-audit*.txt
 
 # Quickshell dynamic data
 cc-data.js
+bt-data.js
+bt-data.js
+bright-data.js
