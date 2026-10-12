@@ -1,4 +1,5 @@
 
+bluez
 brightnessctl
 cliphist
 # Debian 13 (trixie) packages required by the desktop.
