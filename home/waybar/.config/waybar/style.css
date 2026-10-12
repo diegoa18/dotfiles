@@ -49,17 +49,7 @@ window#waybar.floating {
  * POPUPS / MENUS
  * ============================================================ */
 
-menu {
-    background: rgba(8, 8, 8, 0.45);
-    color: #cad3f5;
 
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-
-    padding: 6px;
-
-    margin-top: 100px;
-}
 
 menuitem {
     background: transparent;
@@ -118,4 +108,37 @@ tooltip label {
 
 #custom-bluetooth.connected {
     color: #8aadf4; /* Azul brillante cuando está conectado */
+}
+
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+#tray {
+    padding: 0 10px;
+    background-color: transparent;
+}
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+menu {
+    background-color: rgba(8, 8, 8, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 5px;
+    margin-top: 5px;
+}
+menu menuitem {
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+menu menuitem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }

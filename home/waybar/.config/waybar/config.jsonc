@@ -12,10 +12,11 @@
     "clock"
   ],
   "modules-right": [
+    "tray",
+    "custom/brightness",
     "pulseaudio",
     "network",
     "battery",
-    "custom/brightness",
     "custom/controlcenter",
     "custom/power"
   ],
@@ -125,5 +126,9 @@
     "on-click": "~/.local/bin/brightness-popup",
     "on-click-middle": "~/.local/bin/waybar-pin unpin backlight",
     "tooltip": true
+  },
+  "tray": {
+    "icon-size": 18,
+    "spacing": 10
   }
 }
