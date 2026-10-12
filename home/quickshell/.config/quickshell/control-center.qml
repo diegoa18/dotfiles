@@ -49,11 +49,12 @@ WaybarPopup {
             Rectangle { width: parent.width; height: 1; color: "#20ffffff" }
 
             Repeater {
+                // Orden alfabético estricto conceptual: Audio (A), Battery (Ba), Bluetooth (Bl), Network (N)
                 model: [
-                    { name: Data.network, module: "network", icon: "\uf1eb", action: "network-popup" },
-                    { name: Data.bluetooth, module: "custom/bluetooth", icon: "\uf294", action: "bluetooth-popup" },
                     { name: Data.audio, module: "pulseaudio", icon: "\uf028", action: "audio-popup" },
-                    { name: Data.battery, module: "battery", icon: "\uf240", action: "battery-popup" }
+                    { name: Data.battery, module: "battery", icon: "\uf240", action: "battery-popup" },
+                    { name: Data.bluetooth, module: "custom/bluetooth", icon: "\uf294", action: "bluetooth-popup" },
+                    { name: Data.network, module: "network", icon: "\uf1eb", action: "network-popup" }
                 ]
 
                 delegate: Rectangle {
