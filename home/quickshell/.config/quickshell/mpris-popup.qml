@@ -114,7 +114,7 @@ WaybarPopup {
         anchors.fill: parent
 
         radius: 10
-        color: "#59080808"
+        color: "#73080808"
 
         border.width: 1
         border.color: "#20ffffff"

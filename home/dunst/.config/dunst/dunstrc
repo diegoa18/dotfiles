@@ -58,18 +58,18 @@
 
 [urgency_low]
     timeout = 4
-    background = "#08080859"
+    background = "#08080873"
     foreground = "#b8c0e0"
     frame_color = "#ffffff10"
 
 [urgency_normal]
     timeout = 6
-    background = "#08080859"
+    background = "#08080873"
     foreground = "#cad3f5"
     frame_color = "#ffffff18"
 
 [urgency_critical]
     timeout = 8
-    background = "#08080859"
+    background = "#08080873"
     foreground = "#cad3f5"
     frame_color = "#ed8796"

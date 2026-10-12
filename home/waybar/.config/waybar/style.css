@@ -23,7 +23,7 @@ window#waybar {
 /* Sin ventanas / solo floating */
 window#waybar.empty,
 window#waybar.floating {
-    background: rgba(8, 8, 8, 0.35);
+    background: rgba(8, 8, 8, 0.45);
 }
 
 #custom-user,
@@ -50,7 +50,7 @@ window#waybar.floating {
  * ============================================================ */
 
 menu {
-    background: rgba(8, 8, 8, 0.35);
+    background: rgba(8, 8, 8, 0.45);
     color: #cad3f5;
 
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -98,7 +98,7 @@ separator {
  * ============================================================ */
 
 tooltip {
-    background: rgba(8, 8, 8, 0.88);
+    background: rgba(8, 8, 8, 0.45);
     color: #cad3f5;
 
     border: 1px solid rgba(255, 255, 255, 0.08);

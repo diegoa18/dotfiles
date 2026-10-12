@@ -50,7 +50,7 @@ WaybarPopup {
     Rectangle {
         anchors.fill: parent
         radius: 10
-        color: "#59080808"
+        color: "#73080808"
         clip: true
         focus: true
         border.width: 1
