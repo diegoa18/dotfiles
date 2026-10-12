@@ -25,3 +25,6 @@ repro-audit*.txt
 
 # Local Git identity
 .gitconfig.local
+
+# Quickshell dynamic data
+cc-data.js

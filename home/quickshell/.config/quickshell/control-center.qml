@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Hyprland
+import "cc-data.js" as Data
 
 WaybarPopup {
     id: root
@@ -49,9 +50,9 @@ WaybarPopup {
 
             Repeater {
                 model: [
-                    { name: "Network", module: "network", icon: "\uf1eb", action: "network-popup" },
-                    { name: "Audio", module: "pulseaudio", icon: "\uf028", action: "audio-popup" },
-                    { name: "Battery", module: "battery", icon: "\uf240", action: "battery-popup" }
+                    { name: Data.network, module: "network", icon: "\uf1eb", action: "network-popup" },
+                    { name: Data.audio, module: "pulseaudio", icon: "\uf028", action: "audio-popup" },
+                    { name: Data.battery, module: "battery", icon: "\uf240", action: "battery-popup" }
                 ]
 
                 delegate: Rectangle {
@@ -83,7 +84,6 @@ WaybarPopup {
                         }
                     }
 
-                    // Botón de Anclaje (Pin)
                     ToolButton {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
@@ -105,7 +105,6 @@ WaybarPopup {
                         }
                     }
 
-                    // Área clickeable para abrir el popup (Ignora el área del botón Pin)
                     MouseArea {
                         id: mouseArea
                         anchors.fill: parent

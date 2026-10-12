@@ -1,16 +1,42 @@
 #!/bin/bash
-
 set -euo pipefail
 
 CONFIG="$HOME/.config/quickshell/control-center.qml"
+DATA_FILE="$HOME/.config/quickshell/cc-data.js"
 
-if ! command -v quickshell >/dev/null 2>&1; then
-    printf 'Error: quickshell is not available in PATH.\n' >&2
-    exit 1
-fi
-
+# Si está abierto, cerrarlo
 if quickshell kill -p "$CONFIG" >/dev/null 2>&1; then
     exit 0
 fi
 
+# -- RECOPILAR ESTADO ACTUAL (Milisegundos) --
+# 1. Red (WiFi o Ethernet)
+NET_INFO=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | awk -F: '/^yes/ {print $2}' | head -n 1 || true)
+if [ -z "$NET_INFO" ]; then
+    NET_INFO=$(ip -br link show 2>/dev/null | awk '$2=="UP" && $1!="lo" {print $1}' | head -n 1 || true)
+fi
+[ -z "$NET_INFO" ] && NET_INFO="Desconectado"
+
+# 2. Audio
+VOL_INFO=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || echo "0.00")
+if echo "$VOL_INFO" | grep -q "MUTED"; then
+    AUDIO_TEXT="Silenciado"
+else
+    AUDIO_TEXT=$(echo "$VOL_INFO" | awk '{print int($2 * 100)}')
+    AUDIO_TEXT="${AUDIO_TEXT}%"
+fi
+
+# 3. Batería
+BAT_INFO=$(cat /sys/class/power_supply/BAT*/capacity 2>/dev/null | head -n 1 || echo "100")
+BAT_TEXT="${BAT_INFO}%"
+
+# -- INYECTAR DATOS EN QUICKSHELL --
+cat << JS_EOF > "$DATA_FILE"
+.pragma library
+var network = "$NET_INFO";
+var audio = "$AUDIO_TEXT";
+var battery = "$BAT_TEXT";
+JS_EOF
+
+# Lanzar el menú
 exec "$(dirname "${BASH_SOURCE[0]}")/waybar-popup" "$CONFIG"
