@@ -15,7 +15,7 @@ case "$ACTION" in
         ;;
     info)
         if ! bluetoothctl show | grep -q "Powered: yes"; then
-            echo "Apagado"
+            echo "Off"
             exit 0
         fi
         
@@ -23,12 +23,12 @@ case "$ACTION" in
         if [ -n "$CONNECTED" ]; then
             echo "$CONNECTED" | cut -d ' ' -f 3-
         else
-            echo "Desconectado"
+            echo "Disconnected"
         fi
         ;;
     waybar)
         if ! bluetoothctl show | grep -q "Powered: yes"; then
-            echo '{"text": "", "tooltip": "Bluetooth: Apagado", "class": "disabled"}'
+            echo '{"text": "", "tooltip": "Bluetooth: Off", "class": "disabled"}'
             exit 0
         fi
         
@@ -39,13 +39,13 @@ case "$ACTION" in
             BATTERY=$(bluetoothctl info "$MAC" | grep -i "Battery Percentage" | tr -dc '0-9' || echo "")
             
             if [ -n "$BATTERY" ]; then
-                TOOLTIP="Conectado a $NAME\nBatería: $BATTERY%"
+                TOOLTIP="Connected to $NAME\nBattery: $BATTERY%"
             else
-                TOOLTIP="Conectado a $NAME"
+                TOOLTIP="Connected to $NAME"
             fi
             echo "{\"text\": \"$NAME\", \"tooltip\": \"$TOOLTIP\", \"class\": \"connected\"}"
         else
-            echo '{"text": "", "tooltip": "Bluetooth: Encendido (Ningún dispositivo conectado)", "class": "disconnected"}'
+            echo '{"text": "", "tooltip": "Bluetooth: On (No device connected)", "class": "disconnected"}'
         fi
         ;;
     *)

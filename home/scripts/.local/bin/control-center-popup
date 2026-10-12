@@ -10,12 +10,12 @@ fi
 
 # 1. Red: OPTIMIZADO (Lee la RAM, no despierta el hardware)
 NET_INFO=$(nmcli -t -f NAME,TYPE connection show --active 2>/dev/null | awk -F: '$2 !~ /loopback/ {print $1}' | head -n 1 || true)
-[ -z "$NET_INFO" ] && NET_INFO="Desconectado"
+[ -z "$NET_INFO" ] && NET_INFO="Disconnected"
 
 # 2. Audio: Instantáneo (lee directo de pipewire/wireplumber)
 VOL_INFO=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || echo "0.00")
 if echo "$VOL_INFO" | grep -q "MUTED"; then
-    AUDIO_TEXT="Silenciado"
+    AUDIO_TEXT="Muted"
 else
     AUDIO_TEXT=$(echo "$VOL_INFO" | awk '{print int($2 * 100)}')
     AUDIO_TEXT="${AUDIO_TEXT}%"

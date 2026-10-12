@@ -107,7 +107,7 @@ WaybarPopup {
                             text: modelData.icon
                             font.family: "Symbols Nerd Font"
                             font.pixelSize: 16
-                            color: modelData.state === "Conectado" ? "#8aadf4" : "#a6adc8"
+                            color: modelData.state === "Connected" ? "#8aadf4" : "#a6adc8"
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
@@ -131,7 +131,7 @@ WaybarPopup {
                         anchors.fill: parent
                         hoverEnabled: true
                         onClicked: {
-                            if (modelData.state === "Conectado") {
+                            if (modelData.state === "Connected") {
                                 Quickshell.execDetached(["bluetoothctl", "disconnect", modelData.mac])
                             } else {
                                 Quickshell.execDetached(["bluetoothctl", "connect", modelData.mac])
@@ -145,7 +145,7 @@ WaybarPopup {
             // Mensaje vacío
             Text {
                 visible: Data.devices.length === 0
-                text: Data.isPowered ? "No hay dispositivos guardados" : "Bluetooth apagado"
+                text: Data.isPowered ? "No saved devices" : "Bluetooth off"
                 color: "#a6adc8"
                 font.pixelSize: 13
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -161,7 +161,7 @@ WaybarPopup {
                 visible: Data.isPowered
                 
                 Text {
-                    text: "󰑄 Buscar dispositivos..."
+                    text: "󰑄 Scan for devices..."
                     color: "#a6adc8"
                     font.pixelSize: 12
                     anchors.centerIn: parent
