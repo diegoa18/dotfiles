@@ -1,0 +1,111 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "cli_default_open_behavior": "new_window",
+  "outline_panel": {
+    "dock": "left"
+  },
+  "languages": {
+    "R": {
+      "language_servers": ["r_language_server"]
+    }
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "git_panel": {
+    "sort_by_path": true,
+    "tree_view": true,
+    "dock": "left"
+  },
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Colored Zed Icons Theme Dark",
+    "dark": "Colored Zed Icons Theme Dark"
+  },
+  "telemetry": {
+    "diagnostics": true,
+    "metrics": false,
+  },
+  "current_line_highlight": "all",
+  "session": {
+    "trust_all_worktrees": false,
+  },
+  "vim_mode": false,
+  "ui_font_size": 16,
+  "buffer_font_size": 15,
+  "theme": {
+    "mode": "dark",
+    "light": "Kanagawa Lotus",
+    "dark": "Catppuccin Espresso (Blur) [Heavy]",
+  },
+  "theme_overrides": {
+    "Catppuccin Espresso (Blur) [Heavy]": {
+      "title_bar.inactive_background": "#000000e0"
+    },
+    "Base16 Gruvbox Material Dark, Hard": {
+      "border": "#1d2021",
+      "border.variant": "#1d2021"
+    }
+  },
+  "toolbar": {
+    "breadcrumbs": true,
+  },
+  "show_edit_predictions": false,
+  "scrollbar": {
+    "show": "never",
+  },
+  "title_bar": {
+    "show_onboarding_banner": false,
+    "show_project_items": true,
+    "show_branch_name": true,
+    "show_user_menu": false,
+  },
+  "tab_bar": {
+    "show": false,
+  },
+  "status_bar": {
+    "line_endings_button": false,
+    "experimental.show": false,
+  },
+  "project_panel": {
+    "dock": "right",
+    "hide_root": true,
+    "auto_fold_dirs": false,
+    "indent_size": 14,
+    "starts_open": false,
+    "indent_guides": {
+      "show": "never",
+    },
+    "scrollbar": {
+      "show": "never",
+    },
+  },
+  "file_finder": {
+    "modal_max_width": "xlarge",
+  },
+  "gutter": {
+    "min_line_number_digits": 0,
+    "folds": false,
+    "runnables": false,
+  },
+  "indent_guides": {
+    "line_width": 1,
+  },
+  "ui_font_family": ".ZedMono",
+  "agent_ui_font_size": 10,
+  "drag_and_drop_selection": {
+    "enabled": true,
+  },
+}
