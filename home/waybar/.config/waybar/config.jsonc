@@ -12,6 +12,7 @@
     "clock"
   ],
   "modules-right": [
+    "custom/bluetooth",
     "custom/controlcenter",
     "custom/power"
   ],
@@ -96,5 +97,15 @@
     "format": "⏻",
     "tooltip": false,
     "on-click": "~/.local/bin/power-menu"
+  },
+  "custom/bluetooth": {
+    "exec": "~/.local/bin/bt-manager waybar",
+    "return-type": "json",
+    "interval": 2,
+    "format": "<span font_family=\"Symbols Nerd Font\"></span> {}",
+    "on-click": "~/.local/bin/bluetooth-popup",
+    "on-click-right": "~/.local/bin/bt-manager toggle",
+    "on-click-middle": "~/.local/bin/waybar-pin unpin custom/bluetooth",
+    "tooltip": true
   }
 }

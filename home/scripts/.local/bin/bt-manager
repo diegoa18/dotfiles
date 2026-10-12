@@ -1,0 +1,55 @@
+#!/bin/bash
+set -euo pipefail
+
+ACTION="${1:-info}"
+
+case "$ACTION" in
+    toggle)
+        if bluetoothctl show | grep -q "Powered: yes"; then
+            bluetoothctl power off
+        else
+            bluetoothctl power on
+        fi
+        # Forzar recarga visual inmediata de Waybar
+        killall -SIGUSR2 waybar
+        ;;
+    info)
+        if ! bluetoothctl show | grep -q "Powered: yes"; then
+            echo "Apagado"
+            exit 0
+        fi
+        
+        CONNECTED=$(bluetoothctl devices Connected | head -n 1)
+        if [ -n "$CONNECTED" ]; then
+            echo "$CONNECTED" | cut -d ' ' -f 3-
+        else
+            echo "Desconectado"
+        fi
+        ;;
+    waybar)
+        if ! bluetoothctl show | grep -q "Powered: yes"; then
+            echo '{"text": "", "tooltip": "Bluetooth: Apagado", "class": "disabled"}'
+            exit 0
+        fi
+        
+        CONNECTED=$(bluetoothctl devices Connected | head -n 1)
+        if [ -n "$CONNECTED" ]; then
+            NAME=$(echo "$CONNECTED" | cut -d ' ' -f 3-)
+            MAC=$(echo "$CONNECTED" | cut -d ' ' -f 2)
+            BATTERY=$(bluetoothctl info "$MAC" | grep -i "Battery Percentage" | tr -dc '0-9' || echo "")
+            
+            if [ -n "$BATTERY" ]; then
+                TOOLTIP="Conectado a $NAME\nBatería: $BATTERY%"
+            else
+                TOOLTIP="Conectado a $NAME"
+            fi
+            echo "{\"text\": \"$NAME\", \"tooltip\": \"$TOOLTIP\", \"class\": \"connected\"}"
+        else
+            echo '{"text": "", "tooltip": "Bluetooth: Encendido (Ningún dispositivo conectado)", "class": "disconnected"}'
+        fi
+        ;;
+    *)
+        echo "Uso: bt-manager {toggle|info|waybar}"
+        exit 1
+        ;;
+esac

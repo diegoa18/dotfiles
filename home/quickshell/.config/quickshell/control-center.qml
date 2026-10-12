@@ -51,6 +51,7 @@ WaybarPopup {
             Repeater {
                 model: [
                     { name: Data.network, module: "network", icon: "\uf1eb", action: "network-popup" },
+                    { name: Data.bluetooth, module: "custom/bluetooth", icon: "\uf294", action: "bluetooth-popup" },
                     { name: Data.audio, module: "pulseaudio", icon: "\uf028", action: "audio-popup" },
                     { name: Data.battery, module: "battery", icon: "\uf240", action: "battery-popup" }
                 ]

@@ -110,3 +110,12 @@ tooltip {
 tooltip label {
     color: #cad3f5;
 }
+
+#custom-bluetooth.disabled {
+    color: #6c7086; /* Gris opaco cuando está apagado */
+}
+
+
+#custom-bluetooth.connected {
+    color: #8aadf4; /* Azul brillante cuando está conectado */
+}
