@@ -1,14 +1,16 @@
 
+bat
 blueman
 bluez
-brightnessctl
 brightnessctl
 cliphist
 # Debian 13 (trixie) packages required by the desktop.
 # dependencies actually used by the dotfiles.
 dunst
+eza
 fastfetch
 fonts-jetbrains-mono
+fzf
 gir1.2-nm-1.0
 gir1.2-secret-1
 gnome-keyring
