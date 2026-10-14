@@ -73,6 +73,7 @@ end)
 -- ============================================================
 
 hl.bind("ALT + F4", hl.dsp.window.close())
+hl.bind("SUPER + F", hl.dsp.window.fullscreen())
 
 -- ============================================================
 -- WORKSPACES
@@ -104,8 +105,20 @@ hl.bind(
 	})
 )
 
+for i = 1, 9 do
+	local ws = tostring(i)
+	hl.bind("SUPER + " .. ws, hl.dsp.focus({ workspace = ws }))
+	hl.bind(
+		"SUPER + SHIFT + " .. ws,
+		hl.dsp.window.move({
+			workspace = ws,
+			follow = true,
+		})
+	)
+end
+
 -- ============================================================
--- NAVEGACIÓN ENTRE VENTANAS
+-- NAVEGACIÓN Y MOVIMIENTO ENTRE VENTANAS
 -- ============================================================
 
 local directions = {
@@ -117,6 +130,7 @@ local directions = {
 
 for key, dir in pairs(directions) do
 	hl.bind("SUPER + " .. key, hl.dsp.focus({ direction = dir }))
+	hl.bind("SUPER + SHIFT + " .. key, hl.dsp.window.move({ direction = dir }))
 end
 
 -- ============================================================
