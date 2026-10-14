@@ -71,3 +71,6 @@ alias tree="eza -l --tree --git --icons --no-permissions --no-filesize --no-user
 
 # fzf: Integración de historial (Ctrl+R)
 eval "$(fzf --zsh)"
+
+
+export PATH="/home/diego/.local/bin:$PATH"

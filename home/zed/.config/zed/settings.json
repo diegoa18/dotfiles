@@ -1,4 +1,5 @@
 {
+  "disable_ai": false,
   "cli_default_open_behavior": "new_window",
   "outline_panel": {
     "dock": "left"
@@ -12,6 +13,22 @@
     "dock": "left"
   },
   "agent": {
+    "default_model": {
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview",
+      "enable_thinking": true,
+      "effort": "high"
+    },
+    "inline_assistant_model": {
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview",
+      "enable_thinking": false
+    },
+    "play_sound_when_agent_done": "when_hidden",
+    "threads_sidebar": {
+      "auto_open": false,
+      "position": "right"
+    },
     "dock": "right",
     "favorite_models": [],
     "model_parameters": []
