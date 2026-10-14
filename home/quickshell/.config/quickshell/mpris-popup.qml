@@ -269,7 +269,7 @@ WaybarPopup {
 
             color: !control.enabled ? "#b9c0cc"
                 : control.down || control.hovered || control.activeFocus
-                    ? "#8aadf4" : "#ffffff"
+                    ? "#89b4fa" : "#ffffff"
 
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

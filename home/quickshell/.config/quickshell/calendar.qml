@@ -217,7 +217,7 @@ WaybarPopup {
                         color: mouseArea.containsMouse
                             ? "#0fffffff"
                             : isToday
-                                ? "#148aadf4"
+                                ? "#1489b4fa"
                                 : "transparent"
 
                         Text {
@@ -226,7 +226,7 @@ WaybarPopup {
                             text: validDay ? dayIndex : ""
 
                             color: isToday
-                                ? "#8aadf4"
+                                ? "#89b4fa"
                                 : "#ffffff"
 
                             font.pixelSize: 12

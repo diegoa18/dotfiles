@@ -24,7 +24,7 @@ Item {
     readonly property bool muted: AudioMixer.allMuted(liveNodes)
     readonly property int volumePercent: Math.round(audioVolume * 100)
     readonly property color volumeColor: liveNodes.length === 0 || muted
-        ? "#c3c8d4" : volumePercent > 100 ? "#ed8796" : "#ffffff"
+        ? "#c3c8d4" : volumePercent > 100 ? "#f38ba8" : "#ffffff"
 
     implicitHeight: 64 + (subtitle.length > 0 ? 30 : 0)
 
@@ -75,7 +75,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: control.mixerExpanded || mixerButton.hovered || mixerButton.activeFocus
-                        ? "#8aadf4" : "#e2e5ed"
+                        ? "#89b4fa" : "#e2e5ed"
                 }
 
                 onClicked: control.mixerToggleRequested()
@@ -184,7 +184,7 @@ Item {
                 text: control.subtitle
                 textFormat: Text.PlainText
                 elide: Text.ElideRight
-                color: control.outputsExpanded || outputButton.activeFocus ? "#8aadf4" : "#e2e5ed"
+                color: control.outputsExpanded || outputButton.activeFocus ? "#89b4fa" : "#e2e5ed"
                 font.pixelSize: 11
             }
 
@@ -196,7 +196,7 @@ Item {
                 text: control.outputsExpanded ? "▴" : "▾"
                 horizontalAlignment: Text.AlignHCenter
                 color: control.outputsExpanded || outputButton.hovered || outputButton.activeFocus
-                    ? "#8aadf4" : "#e2e5ed"
+                    ? "#89b4fa" : "#e2e5ed"
                 font.pixelSize: 14
             }
         }

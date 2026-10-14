@@ -14,8 +14,8 @@ WaybarPopup {
         && batteries.length > 0 ? UPower.displayDevice : batteries[0] ?? null
     readonly property int percentage: battery
         ? Math.round(Math.max(0, Math.min(1, battery.percentage)) * 100) : 0
-    readonly property color chargeColor: !UPower.onBattery ? "#a6da95"
-        : percentage <= 15 ? "#ed8796" : percentage <= 30 ? "#eed49f" : "#8aadf4"
+    readonly property color chargeColor: !UPower.onBattery ? "#a6e3a1"
+        : percentage <= 15 ? "#f38ba8" : percentage <= 30 ? "#f9e2af" : "#89b4fa"
 
     preferredPopupWidth: 320
     preferredPopupHeight: content.implicitHeight + 32
@@ -207,7 +207,7 @@ WaybarPopup {
                             Accessible.name: modelData.label + (current ? " · Active" : "")
                             background: Rectangle {
                                 radius: 7
-                                color: profileButton.current ? "#188aadf4"
+                                color: profileButton.current ? "#1889b4fa"
                                     : profileButton.hovered || profileButton.activeFocus ? "#18ffffff" : "transparent"
                             }
                             contentItem: Item {
@@ -217,7 +217,7 @@ WaybarPopup {
                                     Text {
                                         text: profileButton.modelData.label
                                         font.pixelSize: 12
-                                        color: profileButton.current ? "#8aadf4" : "#ffffff"
+                                        color: profileButton.current ? "#89b4fa" : "#ffffff"
                                     }
                                     Text {
                                         text: profileButton.modelData.hint
@@ -229,7 +229,7 @@ WaybarPopup {
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: profileButton.current ? "✓" : ""
-                                    color: "#8aadf4"
+                                    color: "#89b4fa"
                                     font.pixelSize: 14
                                 }
                             }
@@ -245,7 +245,7 @@ WaybarPopup {
                             : PowerProfiles.degradationReason === PerformanceDegradationReason.LapDetected
                             ? "Performance limited by lap detection" : "Performance is limited"
                         wrapMode: Text.WordWrap
-                        color: "#eed49f"
+                        color: "#f9e2af"
                         font.pixelSize: 11
                     }
                 }

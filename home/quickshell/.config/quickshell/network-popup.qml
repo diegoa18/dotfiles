@@ -237,7 +237,7 @@ WaybarPopup {
                                 width: 30
                                 height: 16
                                 radius: 8
-                                color: root.state.wifiEnabled ? "#8aadf4" : "#505050"
+                                color: root.state.wifiEnabled ? "#89b4fa" : "#505050"
                                 opacity: wifiToggle.enabled ? 1 : 0.4
 
                                 Rectangle {
@@ -286,7 +286,7 @@ WaybarPopup {
                                 text: modelData.kind === "wifi" ? "\uf1eb" : "\udb80\ude00"
                                 font.family: "Symbols Nerd Font"
                                 font.pixelSize: 18
-                                color: modelData.connected ? "#8aadf4" : "#e2e5ed"
+                                color: modelData.connected ? "#89b4fa" : "#e2e5ed"
                             }
 
                             Column {
@@ -376,7 +376,7 @@ WaybarPopup {
                                 text: "\uf1eb"
                                 font.family: "Symbols Nerd Font"
                                 font.pixelSize: 16
-                                color: modelData.active ? "#8aadf4" : "#ffffff"
+                                color: modelData.active ? "#89b4fa" : "#ffffff"
                             }
 
                             Column {
@@ -389,7 +389,7 @@ WaybarPopup {
                                     text: modelData.ssid
                                     textFormat: Text.PlainText
                                     font.pixelSize: 13
-                                    color: modelData.active ? "#8aadf4" : "#ffffff"
+                                    color: modelData.active ? "#89b4fa" : "#ffffff"
                                     elide: Text.ElideRight
                                 }
 
@@ -437,7 +437,7 @@ WaybarPopup {
                         text: "This Wi-Fi network does not encrypt traffic. Connect anyway?"
                         textFormat: Text.PlainText
                         wrapMode: Text.Wrap
-                        color: "#ed8796"
+                        color: "#f38ba8"
                         font.pixelSize: 12
                     }
 
@@ -494,7 +494,7 @@ WaybarPopup {
                             color: "#30000000"
                             radius: 6
                             border.width: 1
-                            border.color: passwordField.activeFocus ? "#8aadf4" : "#20ffffff"
+                            border.color: passwordField.activeFocus ? "#89b4fa" : "#20ffffff"
                         }
 
                         onAccepted: root.submitPassword()
@@ -532,7 +532,7 @@ WaybarPopup {
                     visible: root.operation !== "" || root.error !== "" || root.notice !== ""
                     text: root.error || root.operation || root.notice
                     textFormat: Text.PlainText
-                    color: root.error ? "#ed8796" : "#8aadf4"
+                    color: root.error ? "#f38ba8" : "#89b4fa"
                     wrapMode: Text.Wrap
                     font.pixelSize: 12
                 }
@@ -594,7 +594,7 @@ WaybarPopup {
             text: control.glyph
             font.family: "Symbols Nerd Font"
             font.pixelSize: 16
-            color: !control.enabled ? "#b9c0cc" : control.hovered || control.activeFocus ? "#8aadf4" : "#ffffff"
+            color: !control.enabled ? "#b9c0cc" : control.hovered || control.activeFocus ? "#89b4fa" : "#ffffff"
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -610,7 +610,7 @@ WaybarPopup {
         contentItem: Text {
             text: control.text
             font.pixelSize: 12
-            color: !control.enabled ? "#b9c0cc" : control.hovered || control.activeFocus ? "#8aadf4" : "#ffffff"
+            color: !control.enabled ? "#b9c0cc" : control.hovered || control.activeFocus ? "#89b4fa" : "#ffffff"
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -639,7 +639,7 @@ WaybarPopup {
                 width: parent.width - 80
                 text: control.value
                 textFormat: Text.PlainText
-                color: control.hovered || control.activeFocus ? "#8aadf4" : "#ffffff"
+                color: control.hovered || control.activeFocus ? "#89b4fa" : "#ffffff"
                 font.pixelSize: 11
                 wrapMode: Text.WrapAnywhere
             }

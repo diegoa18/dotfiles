@@ -54,7 +54,7 @@ Column {
 
                     background: Rectangle {
                         radius: 7
-                        color: output.current ? "#188aadf4"
+                        color: output.current ? "#1889b4fa"
                             : output.hovered || output.activeFocus ? "#18ffffff" : "transparent"
                     }
 
@@ -71,7 +71,7 @@ Column {
                             maximumLineCount: 2
                             elide: Text.ElideRight
                             color: !output.enabled ? "#b9c0cc"
-                                : output.current ? "#8aadf4" : "#ffffff"
+                                : output.current ? "#89b4fa" : "#ffffff"
                             font.pixelSize: 12
                         }
 
@@ -81,7 +81,7 @@ Column {
                             anchors.verticalCenter: parent.verticalCenter
                             width: 18
                             text: output.current ? "✓" : ""
-                            color: "#8aadf4"
+                            color: "#89b4fa"
                             font.pixelSize: 14
                             horizontalAlignment: Text.AlignHCenter
                         }

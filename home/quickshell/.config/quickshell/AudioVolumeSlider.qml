@@ -102,7 +102,7 @@ Slider {
             width: Math.min(slider.value, 1) / slider.to * track.width
             height: track.height
             radius: 2
-            color: slider.enabled ? "#8aadf4" : "#408aadf4"
+            color: slider.enabled ? "#89b4fa" : "#4089b4fa"
         }
 
         Rectangle {
@@ -110,7 +110,7 @@ Slider {
             width: Math.max(0, slider.value - 1) / slider.to * track.width
             height: track.height
             radius: 2
-            color: "#ed8796"
+            color: "#f38ba8"
         }
 
         Rectangle {
@@ -128,7 +128,7 @@ Slider {
         width: slider.knobSize
         height: slider.knobSize
         radius: width / 2
-        color: !slider.enabled ? "#8a8a8a" : slider.value > 1 ? "#ed8796" : "#ffffff"
+        color: !slider.enabled ? "#8a8a8a" : slider.value > 1 ? "#f38ba8" : "#ffffff"
         border.width: 1
         border.color: "#30000000"
     }

@@ -72,7 +72,7 @@ WaybarPopup {
                             text: modelData.icon
                             font.family: "Symbols Nerd Font"
                             font.pixelSize: 16
-                            color: "#8aadf4"
+                            color: "#89b4fa"
                             anchors.verticalCenter: parent.verticalCenter
                             width: 24
                         }
@@ -97,7 +97,7 @@ WaybarPopup {
                             text: "󰐃"
                             font.family: "Symbols Nerd Font"
                             font.pixelSize: 16
-                            color: parent.hovered ? "#8aadf4" : "#e2e5ed"
+                            color: parent.hovered ? "#89b4fa" : "#e2e5ed"
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }

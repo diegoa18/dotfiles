@@ -58,7 +58,7 @@ WaybarPopup {
                         text: "󰃠"
                         font.family: "Symbols Nerd Font"
                         font.pixelSize: 16
-                        color: "#8aadf4"
+                        color: "#89b4fa"
                         width: 24
                     }
                     Text {
@@ -96,7 +96,7 @@ WaybarPopup {
                         Rectangle {
                             width: brightSlider.visualPosition * parent.width
                             height: parent.height
-                            color: "#8aadf4"
+                            color: "#89b4fa"
                             radius: 3
                         }
                     }
@@ -126,7 +126,7 @@ WaybarPopup {
                         text: nightSlider.value < 6000 ? "󰖔" : "󰖨"
                         font.family: "Symbols Nerd Font"
                         font.pixelSize: 16
-                        color: nightSlider.value < 6000 ? "#f5a97f" : "#8aadf4"
+                        color: nightSlider.value < 6000 ? "#fab387" : "#89b4fa"
                         width: 24
                     }
                     Text {
@@ -162,8 +162,8 @@ WaybarPopup {
                         
                         gradient: Gradient {
                             orientation: Gradient.Horizontal
-                            GradientStop { position: 0.0; color: "#f5a97f" }
-                            GradientStop { position: 1.0; color: "#8aadf4" }
+                            GradientStop { position: 0.0; color: "#fab387" }
+                            GradientStop { position: 1.0; color: "#89b4fa" }
                         }
                     }
 

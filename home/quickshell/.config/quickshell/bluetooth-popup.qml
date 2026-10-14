@@ -47,7 +47,7 @@ WaybarPopup {
                     text: "󰂯"
                     font.family: "Symbols Nerd Font"
                     font.pixelSize: 18
-                    color: Data.isPowered ? "#8aadf4" : "#6c7086"
+                    color: Data.isPowered ? "#89b4fa" : "#6c7086"
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
@@ -65,7 +65,7 @@ WaybarPopup {
                     width: 36
                     height: 20
                     radius: 10
-                    color: Data.isPowered ? "#8aadf4" : "#313244"
+                    color: Data.isPowered ? "#89b4fa" : "#313244"
                     anchors.verticalCenter: parent.verticalCenter
                     
                     Rectangle {
@@ -107,7 +107,7 @@ WaybarPopup {
                             text: modelData.icon
                             font.family: "Symbols Nerd Font"
                             font.pixelSize: 16
-                            color: modelData.state === "Connected" ? "#8aadf4" : "#a6adc8"
+                            color: modelData.state === "Connected" ? "#89b4fa" : "#a6adc8"
                             anchors.verticalCenter: parent.verticalCenter
                         }
 

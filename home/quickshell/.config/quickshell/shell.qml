@@ -37,7 +37,7 @@ PanelWindow {
 
     readonly property color osdColor:
         root.osdType === "volume" && root.volumePercent > 100
-            ? "#ed8796"
+            ? "#f38ba8"
             : "#ffffff"
 
     PwObjectTracker {
