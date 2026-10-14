@@ -1,75 +1,68 @@
 [global]
-    monitor = 0
-    follow = mouse
+	monitor = 0
+	follow = mouse
 
-    # Tamaño y posición
-    width = 360
-    height = (0, 120)
-    origin = top-right
-    offset = (18, 42)
+	width = 360
+	height = (0, 120)
+	origin = top-right
+	offset = (18, 42)
 
-    # Capa Wayland
-    layer = overlay
+	layer = overlay
 
-    # Cantidad de notificaciones
-    notification_limit = 5
-    history_length = 20
+	notification_limit = 5
+	history_length = 20
 
-    # Tipografía
-    font = sans-serif 11
+	font = JetBrains Mono 10
 
-    # Contenido
-    format = "<b>%s</b>\n%b"
-    markup = full
-    word_wrap = yes
-    ignore_newline = no
+	format = "<b>%s</b>\n%b"
+	markup = full
+	word_wrap = yes
+	ignore_newline = no
 
-    # Espaciado
-    padding = 14
-    horizontal_padding = 14
-    text_icon_padding = 10
+	padding = 14
+	horizontal_padding = 14
+	text_icon_padding = 12
 
-    # Bordes
-    frame_width = 1
-    frame_color = "#ffffff18"
-    separator_height = 2
-    separator_color = "#ffffff14"
-    corner_radius = 10
+	icon_position = left
+	min_icon_size = 32
+	max_icon_size = 48
 
-    # Duplicados
-    stack_duplicates = true
-    hide_duplicate_count = false
+	frame_width = 1
+	frame_color = "#ffffff18"
+	separator_height = 2
+	separator_color = "#ffffff14"
+	corner_radius = 10
 
-    # Indicadores
-    show_indicators = false
+	stack_duplicates = true
+	hide_duplicate_count = false
 
-    # Barra de progreso
-    progress_bar = true
-    progress_bar_height = 6
-    progress_bar_frame_width = 0
-    progress_bar_min_width = 150
-    progress_bar_max_width = 330
-    highlight = "#8aadf4"
+	show_indicators = false
 
-    # Mouse
-    mouse_left_click = close_current
-    mouse_middle_click = do_action
-    mouse_right_click = close_all
+	progress_bar = true
+	progress_bar_height = 6
+	progress_bar_frame_width = 0
+	progress_bar_min_width = 150
+	progress_bar_max_width = 330
+	highlight = "#89b4fa"
+
+	mouse_left_click = close_current
+	mouse_middle_click = do_action
+	mouse_right_click = close_all
 
 [urgency_low]
-    timeout = 4
-    background = "#08080873"
-    foreground = "#b8c0e0"
-    frame_color = "#ffffff10"
+	timeout = 4
+	background = "#08080873"
+	foreground = "#bac2de"
+	frame_color = "#ffffff10"
 
 [urgency_normal]
-    timeout = 6
-    background = "#08080873"
-    foreground = "#cad3f5"
-    frame_color = "#ffffff18"
+	timeout = 6
+	background = "#08080873"
+	foreground = "#cdd6f4"
+	frame_color = "#ffffff18"
 
 [urgency_critical]
-    timeout = 8
-    background = "#08080873"
-    foreground = "#cad3f5"
-    frame_color = "#ed8796"
+	timeout = 8
+	background = "#08080873"
+	foreground = "#cdd6f4"
+	frame_color = "#f38ba8"
