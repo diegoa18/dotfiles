@@ -10,7 +10,6 @@ case "$ACTION" in
         else
             bluetoothctl power on
         fi
-        # Enviar señal específica solo al módulo de Bluetooth (Signal 8)
         pkill -RTMIN+8 waybar
         ;;
     info)

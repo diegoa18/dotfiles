@@ -82,7 +82,6 @@ class Agent:
         invocation.return_dbus_error(SECRET_INTERFACE + "." + code, "Wi-Fi credentials are unavailable.")
 
     def request(self, _bus, sender, _path, _interface, method, parameters, invocation):
-        # Compare the unique name, never a caller-provided identifier or UID.
         owner = self.client.get_dbus_name_owner()
         if not owner or sender != owner:
             self.error(invocation, "PermissionDenied")

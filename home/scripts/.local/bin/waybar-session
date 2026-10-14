@@ -43,7 +43,6 @@ main() {
 
     command -v systemctl >/dev/null 2>&1 || fail "systemctl is not available."
 
-    # Import only the environment needed by Waybar and its click launchers.
     for variable in \
         XDG_RUNTIME_DIR WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE \
         DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP \

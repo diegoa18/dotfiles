@@ -36,10 +36,8 @@ case "$ACTION" in
         ;;
     toggle-nightlight)
         if pgrep -x "wlsunset" > /dev/null; then
-            # Si está encendido, apagar
             "$0" set-nightlight off
         else
-            # Si está apagado, encender a 4500K por defecto
             "$0" set-nightlight 4500
         fi
         ;;

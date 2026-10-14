@@ -44,7 +44,6 @@ def opening_context(cursor, monitors, layers):
     monitor, x, y, width, height = next(
         (item for item in candidates if item[0].get("focused")), candidates[0]
     )
-    # Hyprland reports layer surfaces in global logical coordinates.
     bars = []
     for level in layers.get(monitor["name"], {}).get("levels", {}).values():
         for layer in level:
@@ -55,7 +54,6 @@ def opening_context(cursor, monitors, layers):
             if lw > lh > 0 and y <= ly < y + height / 2:
                 distance = max(lx - cx, 0, cx - lx - lw) + abs(cy - ly - lh / 2)
                 bars.append((distance, ly + lh - y))
-    # A terminal launch or absent bar still has a predictable centered fallback.
     bar_bottom = min(bars)[1] if bars else 24
     return {"monitor": monitor["name"], "x": cx - x,
             "barBottom": bar_bottom, "gap": GAP, "width": width, "height": height}

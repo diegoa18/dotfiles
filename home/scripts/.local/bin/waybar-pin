@@ -11,7 +11,6 @@ TMP_FILE="${CONFIG_FILE}.tmp"
 
 HAS_MODULE=$(jq -e ".[\"modules-right\"] | index(\"$MODULE\")" "$CONFIG_FILE" >/dev/null && echo "true" || echo "false")
 
-# Lógica maestra: Inyectar SIEMPRE justo antes de 'custom/controlcenter'
 JQ_FILTER_PIN='
   .["modules-right"] as $arr |
   ($arr | index("custom/controlcenter")) as $idx |

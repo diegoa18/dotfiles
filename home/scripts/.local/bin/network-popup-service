@@ -100,7 +100,6 @@ def emit(message):
 
 def security_for(ap):
     flags = int(ap.get_wpa_flags()) | int(ap.get_rsn_flags())
-    # Values from NM80211ApSecurityFlags; its GI name starts with a digit.
     if flags & 0x400:
         return "sae", "WPA2/WPA3" if flags & 0x100 else "WPA3"
     if flags & 0x100:
@@ -198,7 +197,6 @@ def network_rows(devices):
                 "canConnect": bool(profiles) or (key_mgmt is not None and security != "WPA" and int(ap.get_mode()) == 2),
             }
             old = rows.get(key)
-            # Show one row per SSID/security/interface; preserve the actual active AP.
             if old is None or (row["active"], row["signal"]) > (old["active"], old["signal"]):
                 rows[key] = row
     return sorted(rows.values(), key=lambda row: (not row["active"], -row["signal"], row["ssid"].casefold()))
@@ -287,7 +285,6 @@ class NetworkPopup:
             self.refresh_source = GLib.timeout_add(100, self.publish)
 
     def scan_if_stale(self):
-        # Device.get_path() is the hardware path; use NMObject for D-Bus IDs.
         for device in visible_devices(self.client):
             if device.get_device_type() == NM.DeviceType.WIFI and self.client.wireless_get_enabled():
                 age = time.clock_gettime(time.CLOCK_BOOTTIME) * 1000 - device.get_last_scan()
@@ -435,7 +432,6 @@ class NetworkPopup:
             security = profile.get_setting_wireless_security()
             security.set_property("psk", None)
             security.set_property("psk-flags", NM.SettingSecretFlags.AGENT_OWNED)
-            # Restrict this credential-bearing profile to the current account.
             setting = profile.get_setting_connection()
             for index in range(setting.get_num_permissions() - 1, -1, -1):
                 setting.remove_permission(index)
@@ -557,7 +553,6 @@ class NetworkPopup:
                 self.handle(parse_request(line))
                 emit({"type": "ack"})
             except (ValueError, TypeError, GLib.Error) as error:
-                # Do not include the request, which can contain a password.
                 if self.pending and self.pending is not previous_pending:
                     self.finish_operation(str(error) if isinstance(error, RequestError) else "The network request could not be completed.")
                 else:
@@ -638,7 +633,6 @@ def main():
             return 0
         service.ensure_keyring_agent()
         GLib.io_add_watch(sys.stdin.fileno(), GLib.IO_IN | GLib.IO_HUP, service.read_input)
-        # Reuse fresh scan results; a scan failure must not stop the popup.
         service.scan_if_stale()
         loop.run()
         return 0

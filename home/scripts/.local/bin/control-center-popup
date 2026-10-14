@@ -24,7 +24,6 @@ BAT_TEXT="${BAT_INFO}%"
 
 BT_INFO=$(~/.local/bin/bt-manager info)
 
-# Brillo nativo
 MAX=$(brightnessctl m)
 CURRENT=$(brightnessctl g)
 PERCENT=$(( CURRENT * 100 / MAX ))
