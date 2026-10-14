@@ -107,7 +107,7 @@ WaybarPopup {
                             text: modelData.icon
                             font.family: "Symbols Nerd Font"
                             font.pixelSize: 16
-                            color: modelData.state === "Connected" ? "#89b4fa" : "#a6adc8"
+                            color: modelData.state === "Connected" ? "#89b4fa" : "#a1a1aa"
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
@@ -120,7 +120,7 @@ WaybarPopup {
                             }
                             Text {
                                 text: modelData.state
-                                color: "#a6adc8"
+                                color: "#a1a1aa"
                                 font.pixelSize: 11
                             }
                         }
@@ -146,7 +146,7 @@ WaybarPopup {
             Text {
                 visible: Data.devices.length === 0
                 text: Data.isPowered ? "No saved devices" : "Bluetooth off"
-                color: "#a6adc8"
+                color: "#a1a1aa"
                 font.pixelSize: 13
                 anchors.horizontalCenter: parent.horizontalCenter
                 padding: 10
@@ -162,7 +162,7 @@ WaybarPopup {
                 
                 Text {
                     text: "󰑄 Scan for devices..."
-                    color: "#a6adc8"
+                    color: "#a1a1aa"
                     font.pixelSize: 12
                     anchors.centerIn: parent
                 }

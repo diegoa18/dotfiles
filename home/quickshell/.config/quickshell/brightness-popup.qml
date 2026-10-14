@@ -69,7 +69,7 @@ WaybarPopup {
                     }
                     Text {
                         text: Math.round(brightSlider.value) + "%"
-                        color: "#a6adc8"
+                        color: "#a1a1aa"
                         font.pixelSize: 13
                         horizontalAlignment: Text.AlignRight
                     }
@@ -137,7 +137,7 @@ WaybarPopup {
                     }
                     Text {
                         text: nightSlider.value < 6400 ? Math.round(nightSlider.value) + "K" : "Off"
-                        color: "#a6adc8"
+                        color: "#a1a1aa"
                         font.pixelSize: 13
                         horizontalAlignment: Text.AlignRight
                     }

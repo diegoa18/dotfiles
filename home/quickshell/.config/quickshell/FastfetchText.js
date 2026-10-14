@@ -25,7 +25,6 @@ function applyGhosttySettings(settings, config) {
         var value = match[2].replace(/^"|"$/g, "");
         if (key === "font-family") {
             if (!value) {
-                // Ghostty serializes its embedded JetBrains Mono as an empty family.
                 settings.family = "JetBrains Mono";
                 familySelected = false;
             } else if (!familySelected) {
@@ -71,15 +70,12 @@ function hexByte(value) {
     return ("0" + Math.max(0, Math.min(255, value)).toString(16)).slice(-2);
 }
 
-// Fastfetch draws the logo first, then moves back up to print the fields.
-// Preserve these cursor movements instead of merely removing ANSI escapes.
 function render(output, settings, fallbackForeground) {
-    // OSC hyperlinks contain metadata, not visible text. Keep the label between them.
     output = output.replace(/\x1b\][\s\S]*?(?:\x07|\x1b\\)/g, "");
     var rows = [];
     var row = 0;
     var column = 0;
-    var foreground = settings.foreground || fallbackForeground;
+    var foreground = fallbackForeground || settings.foreground;
     var color = foreground;
     var bold = false;
     var tokens = /\x1b\[([0-9;?]*)([A-Za-z])|([\s\S])/g;
@@ -98,7 +94,6 @@ function render(output, settings, fallbackForeground) {
             } else if (character === "\b") {
                 column = Math.max(0, column - 1);
             } else if (character.charCodeAt(0) >= 32) {
-                // A UTF-16 surrogate pair occupies one cell for this output.
                 var code = character.charCodeAt(0);
                 if (code >= 0xd800 && code <= 0xdbff && tokens.lastIndex < output.length) {
                     var next = output.charCodeAt(tokens.lastIndex);

@@ -97,7 +97,7 @@ WaybarPopup {
                             text: "󰐃"
                             font.family: "Symbols Nerd Font"
                             font.pixelSize: 16
-                            color: parent.hovered ? "#89b4fa" : "#e2e5ed"
+                            color: parent.hovered ? "#89b4fa" : "#ffffff"
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }

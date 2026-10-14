@@ -84,7 +84,7 @@ element alternate.urgent {
 }
 
 element selected.normal {
-	background-color: #ffffff10;
+	background-color: #cdd6f410;
 	text-color: #cdd6f4;
 }
 

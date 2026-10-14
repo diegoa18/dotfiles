@@ -286,7 +286,7 @@ WaybarPopup {
                                 text: modelData.kind === "wifi" ? "\uf1eb" : "\udb80\ude00"
                                 font.family: "Symbols Nerd Font"
                                 font.pixelSize: 18
-                                color: modelData.connected ? "#89b4fa" : "#e2e5ed"
+                                color: modelData.connected ? "#89b4fa" : "#ffffff"
                             }
 
                             Column {
@@ -307,7 +307,7 @@ WaybarPopup {
                                     text: modelData.state + " · " + modelData.interface
                                         + (modelData.signal !== null ? " · " + modelData.signal + "%" : "")
                                     textFormat: Text.PlainText
-                                    color: "#e2e5ed"
+                                    color: "#ffffff"
                                     font.pixelSize: 11
                                     elide: Text.ElideRight
                                 }
@@ -338,7 +338,7 @@ WaybarPopup {
                         : !root.state.wifiEnabled ? "Wi-Fi is off"
                         : root.state.scanning ? "Scanning…" : "No visible Wi-Fi networks"
                     wrapMode: Text.Wrap
-                    color: "#e2e5ed"
+                    color: "#ffffff"
                     font.pixelSize: 12
                 }
 
@@ -398,7 +398,7 @@ WaybarPopup {
                                     text: modelData.active ? "Connected"
                                         : modelData.saved ? "Saved · " + modelData.security
                                         : modelData.security
-                                    color: "#e2e5ed"
+                                    color: "#ffffff"
                                     font.pixelSize: 11
                                     elide: Text.ElideRight
                                 }
@@ -410,7 +410,7 @@ WaybarPopup {
                                 text: modelData.security === "Open" ? "" : "\uf023"
                                 font.family: "Symbols Nerd Font"
                                 font.pixelSize: 11
-                                color: "#e2e5ed"
+                                color: "#ffffff"
                             }
 
                             Text {
@@ -419,7 +419,7 @@ WaybarPopup {
                                 text: modelData.signal + "%"
                                 horizontalAlignment: Text.AlignRight
                                 font.pixelSize: 11
-                                color: "#e2e5ed"
+                                color: "#ffffff"
                             }
                         }
 
@@ -481,7 +481,7 @@ WaybarPopup {
                         inputMethodHints: Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase | Qt.ImhHiddenText
                         placeholderText: "Password"
                         color: "#ffffff"
-                        placeholderTextColor: "#e2e5ed"
+                        placeholderTextColor: "#ffffff"
                         font.pixelSize: 13
                         enabled: !root.busy
                         selectByMouse: false
@@ -522,7 +522,7 @@ WaybarPopup {
                     width: parent.width
                     visible: root.state.networks.some(network => !network.canConnect)
                     text: "Enterprise and legacy WPA/WEP networks require a configured profile."
-                    color: "#e2e5ed"
+                    color: "#ffffff"
                     wrapMode: Text.Wrap
                     font.pixelSize: 11
                 }
@@ -594,7 +594,7 @@ WaybarPopup {
             text: control.glyph
             font.family: "Symbols Nerd Font"
             font.pixelSize: 16
-            color: !control.enabled ? "#b9c0cc" : control.hovered || control.activeFocus ? "#89b4fa" : "#ffffff"
+            color: !control.enabled ? "#a1a1aa" : control.hovered || control.activeFocus ? "#89b4fa" : "#ffffff"
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -610,7 +610,7 @@ WaybarPopup {
         contentItem: Text {
             text: control.text
             font.pixelSize: 12
-            color: !control.enabled ? "#b9c0cc" : control.hovered || control.activeFocus ? "#89b4fa" : "#ffffff"
+            color: !control.enabled ? "#a1a1aa" : control.hovered || control.activeFocus ? "#89b4fa" : "#ffffff"
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -632,7 +632,7 @@ WaybarPopup {
             Text {
                 width: 72
                 text: control.label
-                color: "#e2e5ed"
+                color: "#ffffff"
                 font.pixelSize: 11
             }
             Text {

@@ -162,7 +162,7 @@ WaybarPopup {
 
                         text: modelData
 
-                        color: "#e2e5ed"
+                        color: "#ffffff"
                         font.pixelSize: 11
 
                         horizontalAlignment: Text.AlignHCenter
@@ -251,7 +251,7 @@ WaybarPopup {
 
                 text: "Esc to close"
 
-                color: "#e2e5ed"
+                color: "#ffffff"
                 font.pixelSize: 9
 
                 horizontalAlignment: Text.AlignHCenter

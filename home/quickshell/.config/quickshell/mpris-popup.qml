@@ -163,7 +163,7 @@ WaybarPopup {
                     visible: artwork.status !== Image.Ready
 
                     text: "♪"
-                    color: "#e2e5ed"
+                    color: "#ffffff"
                     font.family: "sans-serif"
                     font.pixelSize: 48
                 }
@@ -267,7 +267,7 @@ WaybarPopup {
             font.family: "Symbols Nerd Font"
             font.pixelSize: control.iconSize
 
-            color: !control.enabled ? "#b9c0cc"
+            color: !control.enabled ? "#a1a1aa"
                 : control.down || control.hovered || control.activeFocus
                     ? "#89b4fa" : "#ffffff"
 

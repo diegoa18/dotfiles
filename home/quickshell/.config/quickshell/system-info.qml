@@ -178,7 +178,7 @@ WaybarPopup {
                 font.pointSize: root.terminalSettings.pointSize > 0
                     ? root.terminalSettings.pointSize : Qt.application.font.pointSize
 
-                color: root.terminalSettings.foreground || systemPalette.text
+                color: "#ffffff"
             }
         }
     }
