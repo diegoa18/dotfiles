@@ -1,34 +1,40 @@
+font-family = JetBrains Mono
+font-size = 11
+
 background = #000000
-foreground = #cad3f5
+foreground = #cdd6f4
 
 background-opacity = 0.86
 background-blur = true
 
-palette = 0=#494d64
-palette = 1=#ed8796
-palette = 2=#a6da95
-palette = 3=#eed49f
-palette = 4=#8aadf4
-palette = 5=#f5bde6
-palette = 6=#8bd5ca
-palette = 7=#a5adcb
+window-decoration = false
+window-padding-x = 8
+window-padding-y = 6
+confirm-close-surface = false
 
-palette = 8=#5b6078
-palette = 9=#ec7486
-palette = 10=#8ccf7f
-palette = 11=#e1c682
-palette = 12=#78a1f6
-palette = 13=#f2a9dd
-palette = 14=#63cbc0
-palette = 15=#b8c0e0
+palette = 0=#45475a
+palette = 1=#f38ba8
+palette = 2=#a6e3a1
+palette = 3=#f9e2af
+palette = 4=#89b4fa
+palette = 5=#f5c2e7
+palette = 6=#94e2d5
+palette = 7=#bac2de
 
-cursor-color = #f5bde6
+palette = 8=#585b70
+palette = 9=#f38ba8
+palette = 10=#a6e3a1
+palette = 11=#f9e2af
+palette = 12=#89b4fa
+palette = 13=#f5c2e7
+palette = 14=#94e2d5
+palette = 15=#a6adc8
+
+cursor-color = #f5e0dc
 cursor-text = #000000
 
-selection-background = #202024
-selection-foreground = #cad3f5
-
-gtk-titlebar-hide-when-maximized = true
+selection-background = #313244
+selection-foreground = #cdd6f4
 
 keybind = ctrl+shift+up=goto_split:up
 keybind = ctrl+shift+down=goto_split:down
