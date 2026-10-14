@@ -1,6 +1,6 @@
 * {
-	font-family: "JetBrains Mono", "Symbols Nerd Font";
-	font-size: 12px;
+	font-family: sans-serif, "Symbols Nerd Font";
+	font-size: 13px;
 
 	border: none;
 	border-radius: 0;
@@ -10,7 +10,7 @@
 
 window#waybar {
 	background: rgba(0, 0, 0, 1);
-	color: #cdd6f4;
+	color: #ffffff;
 
 	transition-property: background-color;
 	transition-duration: 180ms;
@@ -42,7 +42,7 @@ window#waybar.floating {
 
 menuitem {
 	background: transparent;
-	color: #cdd6f4;
+	color: #ffffff;
 
 	border-radius: 7px;
 	padding: 7px 12px;
@@ -50,7 +50,7 @@ menuitem {
 
 menuitem:hover {
 	background: rgba(255, 255, 255, 0.06);
-	color: #cdd6f4;
+	color: #ffffff;
 }
 
 menuitem:active {
@@ -60,7 +60,7 @@ menuitem:active {
 
 menuitem label,
 menuitem:hover label {
-	color: #cdd6f4;
+	color: #ffffff;
 }
 
 menuitem:active label {
@@ -74,7 +74,7 @@ separator {
 
 tooltip {
 	background: rgba(8, 8, 8, 0.45);
-	color: #cdd6f4;
+	color: #ffffff;
 
 	border: 1px solid rgba(255, 255, 255, 0.08);
 	border-radius: 10px;
@@ -83,7 +83,7 @@ tooltip {
 }
 
 tooltip label {
-	color: #cdd6f4;
+	color: #ffffff;
 }
 
 #custom-bluetooth {
