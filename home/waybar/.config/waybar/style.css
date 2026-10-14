@@ -1,34 +1,29 @@
 * {
-    font-family: sans-serif;
-    font-size: 13px;
+	font-family: "JetBrains Mono", "Symbols Nerd Font";
+	font-size: 12px;
 
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    text-shadow: none;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	text-shadow: none;
 }
 
 window#waybar {
-    background: rgba(0, 0, 0, 1);
-    color: #ffffff;
+	background: rgba(0, 0, 0, 1);
+	color: #cdd6f4;
 
-    transition-property: background-color;
-    transition-duration: 180ms;
+	transition-property: background-color;
+	transition-duration: 180ms;
 }
 
-/* ============================================================
- * WAYBAR — ESTADO DEL WORKSPACE
- * ============================================================ */
-
-/* Sin ventanas / solo floating */
 window#waybar.empty,
 window#waybar.floating {
-    background: rgba(8, 8, 8, 0.45);
+	background: rgba(8, 8, 8, 0.45);
 }
 
 #custom-user,
 #clock {
-    padding: 0 14px;
+	padding: 0 14px;
 }
 
 #mpris,
@@ -37,113 +32,99 @@ window#waybar.floating {
 #battery,
 #custom-controlcenter,
 #custom-power {
-    padding: 0 10px;
+	padding: 0 10px;
 }
 
 #custom-controlcenter,
 #custom-power {
-    padding-right: 14px;
+	padding-right: 14px;
 }
 
-/* ============================================================
- * POPUPS / MENUS
- * ============================================================ */
-
-
-
 menuitem {
-    background: transparent;
-    color: #cad3f5;
+	background: transparent;
+	color: #cdd6f4;
 
-    border-radius: 7px;
-    padding: 7px 12px;
+	border-radius: 7px;
+	padding: 7px 12px;
 }
 
 menuitem:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #cad3f5;
+	background: rgba(255, 255, 255, 0.06);
+	color: #cdd6f4;
 }
 
 menuitem:active {
-    background: rgba(138, 173, 244, 0.12);
-    color: #8aadf4;
+	background: rgba(137, 180, 250, 0.12);
+	color: #89b4fa;
 }
 
 menuitem label,
 menuitem:hover label {
-    color: #cad3f5;
+	color: #cdd6f4;
 }
 
 menuitem:active label {
-    color: #8aadf4;
+	color: #89b4fa;
 }
 
 separator {
-    background: rgba(255, 255, 255, 0.08);
-    margin: 5px 4px;
+	background: rgba(255, 255, 255, 0.08);
+	margin: 5px 4px;
 }
 
-/* ============================================================
- * TOOLTIPS
- * ============================================================ */
-
 tooltip {
-    background: rgba(8, 8, 8, 0.45);
-    color: #cad3f5;
+	background: rgba(8, 8, 8, 0.45);
+	color: #cdd6f4;
 
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 10px;
 
-    padding: 6px 10px;
+	padding: 6px 10px;
 }
 
 tooltip label {
-    color: #cad3f5;
+	color: #cdd6f4;
 }
 
 #custom-bluetooth {
-    padding: 0 10px;
-    margin: 0 2px;
+	padding: 0 10px;
+	margin: 0 2px;
 }
 
 #custom-bluetooth.disabled {
-    color: #6c7086; /* Gris opaco cuando está apagado */
+	color: #6c7086;
 }
-
 
 #custom-bluetooth.connected {
-    color: #8aadf4; /* Azul brillante cuando está conectado */
-}
-
-
-#tray > .passive {
-    -gtk-icon-effect: dim;
-}
-#tray > .needs-attention {
-    -gtk-icon-effect: highlight;
+	color: #89b4fa;
 }
 
 #tray {
-    padding: 0 10px;
-    background-color: transparent;
+	padding: 0 10px;
+	background-color: transparent;
 }
+
 #tray > .passive {
-    -gtk-icon-effect: dim;
+	-gtk-icon-effect: dim;
 }
+
 #tray > .needs-attention {
-    -gtk-icon-effect: highlight;
+	-gtk-icon-effect: highlight;
 }
+
 menu {
-    background-color: rgba(8, 8, 8, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 5px;
-    margin-top: 5px;
+	background-color: rgba(8, 8, 8, 0.45);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	border-radius: 10px;
+	padding: 5px;
+	margin-top: 5px;
 }
+
 menu menuitem {
-    padding: 5px 10px;
-    border-radius: 5px;
+	padding: 5px 10px;
+	border-radius: 5px;
 }
+
 menu menuitem:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+	background-color: rgba(255, 255, 255, 0.1);
 }
