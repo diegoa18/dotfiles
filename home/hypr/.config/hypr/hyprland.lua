@@ -322,3 +322,45 @@ hl.window_rule({
 	},
 	confine_pointer = true,
 })
+
+local floating_classes = {
+	"^polkit-mate-authentication-agent-1$",
+	"^pavucontrol$",
+	"^org\\.pulseaudio\\.pavucontrol$",
+	"^nm-connection-editor$",
+	"^blueman-manager$",
+	"^xdg-desktop-portal-gtk$",
+}
+
+for _, cls in ipairs(floating_classes) do
+	hl.window_rule({
+		match = {
+			class = cls,
+		},
+		float = true,
+		center = true,
+	})
+end
+
+local floating_titles = {
+	"^(Open File|Select a File|Choose wallpaper|Open Folder|Save As|Library|File Upload).*$",
+	"^(Abrir archivo|Guardar como|Seleccionar archivo|Abrir carpeta).*$",
+}
+
+for _, t in ipairs(floating_titles) do
+	hl.window_rule({
+		match = {
+			title = t,
+		},
+		float = true,
+		center = true,
+	})
+end
+
+hl.window_rule({
+	match = {
+		title = "^(Picture-in-Picture|Picture in picture)$",
+	},
+	float = true,
+	pin = true,
+})
