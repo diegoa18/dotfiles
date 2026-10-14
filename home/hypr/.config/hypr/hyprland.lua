@@ -378,3 +378,10 @@ hl.window_rule({
 	float = true,
 	pin = true,
 })
+
+hl.window_rule({
+	match = {
+		float = true,
+	},
+	rounding = 10,
+})
