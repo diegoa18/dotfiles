@@ -1,197 +1,117 @@
 configuration {
-    modes: "drun,filebrowser";
-
-    show-icons: true;
-
-    display-drun: "Applications";
-    display-filebrowser: "Files";
-
-    drun-display-format: "{name}";
+	modes: "drun,filebrowser";
+	font: "JetBrains Mono 11";
+	show-icons: true;
+	display-drun: "Applications";
+	display-filebrowser: "Files";
+	drun-display-format: "{name}";
 }
 
 * {
-    background-color: transparent;
-    text-color: #ffffff;
+	background-color: transparent;
+	text-color: #cdd6f4;
 
-    border-color: #ffffff18;
-    separatorcolor: #ffffff14;
+	border-color: #ffffff18;
+	separatorcolor: #ffffff14;
 
-    selected-normal-background: #ffffff10;
-    selected-normal-foreground: #ffffff;
+	selected-normal-background: #ffffff10;
+	selected-normal-foreground: #cdd6f4;
 
-    active-background: #8aadf41c;
-    active-foreground: #ffffff;
+	active-background: #89b4fa1c;
+	active-foreground: #cdd6f4;
 
-    urgent-background: #ed87961c;
-    urgent-foreground: #ffffff;
+	urgent-background: #f38ba81c;
+	urgent-foreground: #cdd6f4;
 }
-
-/* ============================================================
-   WINDOW
-   ============================================================ */
 
 window {
-    width: 600px;
-
-    background-color: #080808b8;
-
-    border: 1px;
-    border-color: #ffffff18;
-
-    border-radius: 10px;
-
-    padding: 12px;
+	width: 600px;
+	background-color: #080808b8;
+	border: 1px;
+	border-color: #ffffff18;
+	border-radius: 10px;
+	padding: 12px;
 }
-
-/* ============================================================
-   MAIN BOX
-   ============================================================ */
 
 mainbox {
-    children: [
-        inputbar,
-        message,
-        listview
-    ];
+	children: [
+		inputbar,
+		message,
+		listview
+	];
 }
 
-/* ============================================================
-   INPUT BAR
-   ============================================================ */
-
 inputbar {
-    children: [
-        prompt,
-        entry
-    ];
-
-    spacing: 10px;
-    padding: 8px 10px;
+	children: [
+		prompt,
+		entry
+	];
+	spacing: 10px;
+	padding: 8px 10px;
 }
 
 prompt {
-    text-color: #8aadf4;
+	text-color: #89b4fa;
 }
 
 entry {
-    text-color: #ffffff;
-    cursor-color: #8aadf4;
+	text-color: #cdd6f4;
+	cursor-color: #89b4fa;
 }
-
-/* ============================================================
-   LIST
-   ============================================================ */
 
 listview {
-    lines: 10;
-    spacing: 4px;
-    fixed-height: false;
+	lines: 10;
+	spacing: 4px;
+	fixed-height: false;
 }
-
-/* ============================================================
-   ELEMENTS
-   ============================================================ */
 
 element {
-    padding: 7px 9px;
-    spacing: 8px;
-    border-radius: 7px;
-
-    background-color: transparent;
-    text-color: #ffffff;
+	padding: 7px 9px;
+	spacing: 8px;
+	border-radius: 7px;
+	background-color: transparent;
+	text-color: #cdd6f4;
 }
 
-/* ------------------------------------------------------------
-   Normal
-   ------------------------------------------------------------ */
-
-element normal.normal {
-    background-color: transparent;
-    text-color: #ffffff;
-}
-
-element normal.active {
-    background-color: transparent;
-    text-color: #ffffff;
-}
-
-element normal.urgent {
-    background-color: transparent;
-    text-color: #ffffff;
-}
-
-/* ------------------------------------------------------------
-   Alternate
-   ------------------------------------------------------------ */
-
-element alternate.normal {
-    background-color: transparent;
-    text-color: #ffffff;
-}
-
-element alternate.active {
-    background-color: transparent;
-    text-color: #ffffff;
-}
-
+element normal.normal,
+element normal.active,
+element normal.urgent,
+element alternate.normal,
+element alternate.active,
 element alternate.urgent {
-    background-color: transparent;
-    text-color: #ffffff;
+	background-color: transparent;
+	text-color: #cdd6f4;
 }
-
-/* ------------------------------------------------------------
-   Selected
-   ------------------------------------------------------------ */
 
 element selected.normal {
-    background-color: #ffffff10;
-    text-color: #ffffff;
+	background-color: #ffffff10;
+	text-color: #cdd6f4;
 }
 
 element selected.active {
-    background-color: #8aadf41c;
-    text-color: #ffffff;
+	background-color: #89b4fa1c;
+	text-color: #cdd6f4;
 }
 
 element selected.urgent {
-    background-color: #ed87961c;
-    text-color: #ffffff;
+	background-color: #f38ba81c;
+	text-color: #cdd6f4;
 }
 
-/* ============================================================
-   ELEMENT TEXT / ICON
-   ============================================================ */
-
 element-text {
-    background-color: transparent;
-    text-color: inherit;
+	background-color: transparent;
+	text-color: inherit;
 }
 
 element-icon {
-    background-color: transparent;
-    size: 20px;
+	background-color: transparent;
+	size: 20px;
 }
 
-/* ============================================================
-   MESSAGE
-   ============================================================ */
-
 message {
-    padding: 4px;
+	padding: 4px;
 }
 
 textbox {
-    text-color: #8087a2;
-}
-
-/* ============================================================
-   FILEBROWSER
-   ============================================================ */
-
-element-text {
-    text-color: inherit;
-}
-
-element-icon {
-    size: 20px;
+	text-color: #7f849c;
 }
