@@ -103,12 +103,12 @@
     "on-click": "~/.local/bin/power-menu"
   },
   "custom/bluetooth": {
-    "exec": "~/.local/bin/bt-manager waybar",
+    "exec": "~/.local/bin/bluetooth-popup-service --waybar",
     "return-type": "json",
     "interval": "once",
     "format": "<span font_family=\"Symbols Nerd Font\"></span> {}",
     "on-click": "~/.local/bin/bluetooth-popup",
-    "on-click-right": "~/.local/bin/bt-manager toggle",
+    "on-click-right": "~/.local/bin/bluetooth-popup-service --toggle",
     "on-click-middle": "~/.local/bin/waybar-pin unpin custom/bluetooth",
     "tooltip": true,
     "signal": 8

@@ -1,38 +1,15 @@
 #!/bin/bash
+
 set -euo pipefail
 
 CONFIG="$HOME/.config/quickshell/bluetooth-popup.qml"
-DATA_FILE="$HOME/.config/quickshell/bt-data.js"
+
+if ! command -v quickshell >/dev/null 2>&1; then
+    exit 1
+fi
 
 if quickshell kill -p "$CONFIG" >/dev/null 2>&1; then
     exit 0
 fi
-
-POWER="false"
-if bluetoothctl show | grep -q "Powered: yes"; then
-    POWER="true"
-fi
-
-echo ".pragma library" > "$DATA_FILE"
-echo "var isPowered = $POWER;" >> "$DATA_FILE"
-echo "var devices = [" >> "$DATA_FILE"
-
-if [ "$POWER" = "true" ]; then
-    bluetoothctl devices | while read -r line; do
-        MAC=$(echo "$line" | awk '{print $2}')
-        NAME=$(echo "$line" | cut -d ' ' -f 3-)
-        
-        if bluetoothctl info "$MAC" | grep -q "Connected: yes"; then
-            STATE="Connected"
-            ICON="󰂱" # Icono conectado
-        else
-            STATE="Disconnected"
-            ICON="󰂯" # Icono normal
-        fi
-        
-        echo "    { name: \"$NAME\", mac: \"$MAC\", state: \"$STATE\", icon: \"$ICON\" }," >> "$DATA_FILE"
-    done
-fi
-echo "];" >> "$DATA_FILE"
 
 exec "$(dirname "${BASH_SOURCE[0]}")/waybar-popup" "$CONFIG"

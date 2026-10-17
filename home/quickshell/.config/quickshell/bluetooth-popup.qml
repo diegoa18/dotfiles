@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import Quickshell
+import Quickshell.Io
 import Quickshell.Hyprland
-import "bt-data.js" as Data
 
 WaybarPopup {
     id: root
@@ -14,10 +14,37 @@ WaybarPopup {
     aboveWindows: true
     focusable: true
 
+    property var state: ({ powered: false, devices: [] })
+
+    function send(req) {
+        if (backend.running) {
+            backend.write(JSON.stringify(req) + "\n")
+        }
+    }
+
     HyprlandFocusGrab {
         windows: [root]
         active: true
         onCleared: Qt.quit()
+    }
+
+    Process {
+        id: backend
+        command: [
+            "/usr/bin/env", "LANG=C.UTF-8", "LC_ALL=C.UTF-8",
+            "/usr/bin/python3", "-I",
+            Quickshell.env("HOME") + "/.local/bin/bluetooth-popup-service"
+        ]
+        stdinEnabled: true
+        running: true
+
+        stdout: SplitParser {
+            onRead: data => {
+                try {
+                    root.state = JSON.parse(data)
+                } catch (error) {}
+            }
+        }
     }
 
     Rectangle {
@@ -38,7 +65,7 @@ WaybarPopup {
             anchors.margins: 14
             spacing: 8
 
-            // Header (Título y Switch)
+            // Header
             Row {
                 width: parent.width
                 spacing: 12
@@ -47,7 +74,7 @@ WaybarPopup {
                     text: "󰂯"
                     font.family: "Symbols Nerd Font"
                     font.pixelSize: 18
-                    color: Data.isPowered ? "#89b4fa" : "#6c7086"
+                    color: root.state.powered ? "#89b4fa" : "#6c7086"
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
@@ -59,39 +86,37 @@ WaybarPopup {
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - 90
                 }
-                
-                // Toggle simple para encender/apagar
+
+                // Toggle Switch Nativo
                 Rectangle {
                     width: 36
                     height: 20
                     radius: 10
-                    color: Data.isPowered ? "#89b4fa" : "#313244"
+                    color: root.state.powered ? "#89b4fa" : "#313244"
                     anchors.verticalCenter: parent.verticalCenter
-                    
+
                     Rectangle {
                         width: 16
                         height: 16
                         radius: 8
                         color: "#ffffff"
                         anchors.verticalCenter: parent.verticalCenter
-                        x: Data.isPowered ? parent.width - width - 2 : 2
+                        x: root.state.powered ? parent.width - width - 2 : 2
+                        Behavior on x { NumberAnimation { duration: 150 } }
                     }
-                    
+
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: {
-                            Quickshell.execDetached(["sh", "-c", "~/.local/bin/bt-manager toggle"])
-                            Qt.quit()
-                        }
+                        onClicked: root.send({action: "toggle"})
                     }
                 }
             }
 
             Rectangle { width: parent.width; height: 1; color: "#20ffffff" }
 
-            // Lista de Dispositivos (Solo si está encendido)
+            // Devices
             Repeater {
-                model: Data.devices
+                model: root.state.devices
                 delegate: Rectangle {
                     width: parent.width
                     height: 48
@@ -104,22 +129,28 @@ WaybarPopup {
                         spacing: 12
 
                         Text {
-                            text: modelData.icon
+                            text: modelData.connected ? "󰂱" : "󰂯"
                             font.family: "Symbols Nerd Font"
                             font.pixelSize: 16
-                            color: modelData.state === "Connected" ? "#89b4fa" : "#a1a1aa"
+                            color: modelData.connected ? "#89b4fa" : "#a1a1aa"
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
                         Column {
                             anchors.verticalCenter: parent.verticalCenter
+                            width: parent.width - 40
                             Text {
                                 text: modelData.name
                                 color: "#ffffff"
                                 font.pixelSize: 13
+                                elide: Text.ElideRight
+                                width: parent.width
                             }
                             Text {
-                                text: modelData.state
+                                text: modelData.connected && modelData.battery !== null
+                                      ? "Connected · " + modelData.battery + "%"
+                                      : modelData.connected ? "Connected"
+                                      : modelData.paired ? "Paired" : "Available"
                                 color: "#a1a1aa"
                                 font.pixelSize: 11
                             }
@@ -131,37 +162,34 @@ WaybarPopup {
                         anchors.fill: parent
                         hoverEnabled: true
                         onClicked: {
-                            if (modelData.state === "Connected") {
-                                Quickshell.execDetached(["bluetoothctl", "disconnect", modelData.mac])
-                            } else {
-                                Quickshell.execDetached(["bluetoothctl", "connect", modelData.mac])
-                            }
-                            Qt.quit()
+                            root.send({
+                                action: modelData.connected ? "disconnect" : "connect",
+                                path: modelData.path
+                            })
                         }
                     }
                 }
             }
 
-            // Mensaje vacío
             Text {
-                visible: Data.devices.length === 0
-                text: Data.isPowered ? "No saved devices" : "Bluetooth off"
+                visible: root.state.devices.length === 0
+                text: root.state.powered ? "No saved devices" : "Bluetooth off"
                 color: "#a1a1aa"
                 font.pixelSize: 13
                 anchors.horizontalCenter: parent.horizontalCenter
                 padding: 10
             }
 
-            // Botón para emparejar/buscar (Abre terminal)
+            // Blueman Fallback para emparejamientos complejos
             Rectangle {
                 width: parent.width
                 height: 36
                 radius: 8
                 color: scanMouseArea.containsMouse ? "#12ffffff" : "transparent"
-                visible: Data.isPowered
-                
+                visible: root.state.powered
+
                 Text {
-                    text: "󰑄 Scan for devices..."
+                    text: "󰒓 Settings..."
                     color: "#a1a1aa"
                     font.pixelSize: 12
                     anchors.centerIn: parent

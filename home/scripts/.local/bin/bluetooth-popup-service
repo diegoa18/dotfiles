@@ -1,0 +1,186 @@
+#!/usr/bin/python3 -I
+"""BlueZ DBus backend for Waybar and Quickshell."""
+
+import argparse
+import json
+import os
+import sys
+import gi
+
+gi.require_version("GLib", "2.0")
+gi.require_version("Gio", "2.0")
+from gi.repository import GLib, Gio
+
+class BluezBackend:
+    def __init__(self, loop=None):
+        self.loop = loop
+        self.bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+        self.objects = {}
+        self.input_buffer = bytearray()
+        self.refresh_objects()
+
+        if self.loop:
+            self.bus.signal_subscribe("org.bluez", "org.freedesktop.DBus.ObjectManager",
+                "InterfacesAdded", None, None, Gio.DBusSignalFlags.NONE, self.on_interfaces_added)
+            self.bus.signal_subscribe("org.bluez", "org.freedesktop.DBus.ObjectManager",
+                "InterfacesRemoved", None, None, Gio.DBusSignalFlags.NONE, self.on_interfaces_removed)
+            self.bus.signal_subscribe("org.bluez", "org.freedesktop.DBus.Properties",
+                "PropertiesChanged", None, None, Gio.DBusSignalFlags.NONE, self.on_properties_changed)
+            GLib.io_add_watch(sys.stdin.fileno(), GLib.IO_IN | GLib.IO_HUP, self.on_stdin)
+
+    def refresh_objects(self):
+        try:
+            res = self.bus.call_sync("org.bluez", "/", "org.freedesktop.DBus.ObjectManager",
+                "GetManagedObjects", None, GLib.VariantType.new("(a{oa{sa{sv}}})"),
+                Gio.DBusCallFlags.NONE, 1000, None)
+            self.objects = res.unpack()[0]
+        except GLib.Error:
+            self.objects = {}
+
+    def get_adapter(self):
+        for path, ifaces in self.objects.items():
+            if "org.bluez.Adapter1" in ifaces:
+                return path, ifaces["org.bluez.Adapter1"]
+        return None, {}
+
+    def get_devices(self):
+        devs = []
+        for path, ifaces in self.objects.items():
+            if "org.bluez.Device1" in ifaces:
+                props = ifaces["org.bluez.Device1"]
+                bat = ifaces.get("org.bluez.Battery1", {}).get("Percentage")
+                devs.append({
+                    "path": path,
+                    "mac": props.get("Address", ""),
+                    "name": props.get("Alias", props.get("Name", "Unknown")),
+                    "connected": props.get("Connected", False),
+                    "paired": props.get("Paired", False),
+                    "battery": bat
+                })
+        return sorted(devs, key=lambda d: (not d["connected"], not d["paired"], d["name"].casefold()))
+
+    def on_interfaces_added(self, bus, sender, path, iface, signal, params):
+        obj_path, interfaces = params.unpack()
+        self.objects[obj_path] = interfaces
+        self.emit_state()
+
+    def on_interfaces_removed(self, bus, sender, path, iface, signal, params):
+        obj_path, interfaces = params.unpack()
+        if obj_path in self.objects:
+            for i in interfaces:
+                self.objects[obj_path].pop(i, None)
+            if not self.objects[obj_path]:
+                del self.objects[obj_path]
+        self.emit_state()
+
+    def on_properties_changed(self, bus, sender, path, iface, signal, params):
+        iface_name, changed, invalidated = params.unpack()
+        if path in self.objects and iface_name in self.objects[path]:
+            self.objects[path][iface_name].update(changed)
+            for prop in invalidated:
+                self.objects[path][iface_name].pop(prop, None)
+        self.emit_state()
+
+    def emit_state(self):
+        adapter_path, adapter = self.get_adapter()
+        powered = adapter.get("Powered", False)
+        print(json.dumps({
+            "powered": powered,
+            "devices": self.get_devices() if powered else []
+        }), flush=True)
+
+    def waybar_state(self):
+        adapter_path, adapter = self.get_adapter()
+        if not adapter or not adapter.get("Powered", False):
+            print(json.dumps({"text": "", "tooltip": "Bluetooth: Off", "class": "disabled"}))
+            return
+        connected = [d for d in self.get_devices() if d["connected"]]
+        if connected:
+            dev = connected[0]
+            tt = f"Connected to {dev['name']}"
+            if dev['battery'] is not None:
+                tt += f"\nBattery: {dev['battery']}%"
+            print(json.dumps({"text": dev["name"], "tooltip": tt, "class": "connected"}))
+        else:
+            print(json.dumps({"text": "", "tooltip": "Bluetooth: On (No device connected)", "class": "disconnected"}))
+
+    def toggle_power(self):
+        path, adapter = self.get_adapter()
+        if path:
+            self.bus.call_sync("org.bluez", path, "org.freedesktop.DBus.Properties", "Set",
+                GLib.Variant("(ssv)", ("org.bluez.Adapter1", "Powered", GLib.Variant("b", not adapter.get("Powered", False)))),
+                None, Gio.DBusCallFlags.NONE, 1000, None)
+
+    def dbus_set_property(self, path, iface, prop, value, type_str):
+        self.bus.call("org.bluez", path, "org.freedesktop.DBus.Properties", "Set",
+            GLib.Variant("(ssv)", (iface, prop, GLib.Variant(type_str, value))),
+            None, Gio.DBusCallFlags.NONE, -1, None, None, None)
+
+    def dbus_call(self, path, iface, method):
+        self.bus.call("org.bluez", path, iface, method, None, None, Gio.DBusCallFlags.NONE, -1, None, None, None)
+
+    def on_stdin(self, source, condition):
+        try:
+            data = os.read(source, 4096)
+        except OSError:
+            data = b""
+        if not data:
+            self.loop.quit()
+            return GLib.SOURCE_REMOVE
+        self.input_buffer.extend(data)
+        while b"\n" in self.input_buffer:
+            line, _, rest = self.input_buffer.partition(b"\n")
+            self.input_buffer = bytearray(rest)
+            try:
+                req = json.loads(line.decode("utf-8"))
+                action = req.get("action")
+                if action == "toggle":
+                    path, adapter = self.get_adapter()
+                    if path:
+                        self.dbus_set_property(path, "org.bluez.Adapter1", "Powered", not adapter.get("Powered", False), "b")
+                elif action == "connect":
+                    self.dbus_call(req.get("path"), "org.bluez.Device1", "Connect")
+                elif action == "disconnect":
+                    self.dbus_call(req.get("path"), "org.bluez.Device1", "Disconnect")
+            except Exception:
+                pass
+        return GLib.SOURCE_CONTINUE
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--waybar", action="store_true")
+    parser.add_argument("--toggle", action="store_true")
+    parser.add_argument("--info", action="store_true")
+    args = parser.parse_args()
+
+    if args.waybar:
+        BluezBackend().waybar_state()
+        return 0
+    if args.info:
+        backend = BluezBackend()
+        path, adapter = backend.get_adapter()
+        if not path or not adapter.get("Powered", False):
+            print("Off")
+            return 0
+        connected = [d for d in backend.get_devices() if d["connected"]]
+        if connected:
+            print(connected[0]["name"])
+        else:
+            print("Disconnected")
+        return 0
+    if args.toggle:
+        BluezBackend().toggle_power()
+        os.system("pkill -RTMIN+8 waybar")
+        return 0
+
+    loop = GLib.MainLoop()
+    backend = BluezBackend(loop)
+    backend.emit_state()
+    try:
+        loop.run()
+    except KeyboardInterrupt:
+        pass
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
