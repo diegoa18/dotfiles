@@ -57,6 +57,7 @@ hl.bind(
 )
 
 hl.on("hyprland.start", function()
+	hl.exec_cmd("cliphist wipe")
 	hl.exec_cmd("~/.local/bin/random-wallpaper")
 	hl.exec_cmd("~/.local/bin/waybar-session start")
 	hl.exec_cmd("dunst")
@@ -408,4 +409,14 @@ hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.window_rule({
     match = { class = "^xdg-desktop-portal-gtk$" },
     size = "900 600",
+})
+
+hl.bind("SUPER + Return", hl.dsp.exec_cmd("~/.local/bin/toggle-scratchpad"))
+
+hl.window_rule({
+    match = { class = "^ghostty-scratchpad$" },
+    float = true,
+    size = "1000 650",
+    center = true,
+    workspace = "special:scratchpad",
 })

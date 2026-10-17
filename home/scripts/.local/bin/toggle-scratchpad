@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+if hyprctl clients -j | grep -q '"class": "ghostty-scratchpad"'; then
+    hyprctl dispatch togglespecialworkspace scratchpad
+else
+    hyprctl dispatch exec "[workspace special:scratchpad] ghostty --class=ghostty-scratchpad"
+fi
