@@ -45,7 +45,8 @@
   "clock": {
     "format": "{:%A %d | %B · %H:%M}",
     "tooltip": false,
-    "on-click": "~/.local/bin/calendar-popup"
+    "on-click": "~/.local/bin/calendar-popup",
+    "on-click-right": "~/.local/bin/notification-popup"
   },
   "custom/controlcenter": {
     "format": "▼",

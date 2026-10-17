@@ -1,0 +1,14 @@
+#!/bin/bash
+set -euo pipefail
+
+CONFIG="$HOME/.config/quickshell/notification-popup.qml"
+
+if ! command -v quickshell >/dev/null 2>&1; then
+    exit 1
+fi
+
+if quickshell kill -p "$CONFIG" >/dev/null 2>&1; then
+    exit 0
+fi
+
+exec "$(dirname "${BASH_SOURCE[0]}")/waybar-popup" "$CONFIG"
