@@ -1,28 +1,16 @@
 #!/bin/bash
-
 set -euo pipefail
+
+pkill slurp || true
 
 XDG_PICTURES_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}"
 SCREENSHOT_DIR="$XDG_PICTURES_DIR/Screenshots"
-
 mkdir -p "$SCREENSHOT_DIR"
-
-geometry="$(slurp)" || exit 0
-
-[ -n "$geometry" ] || exit 0
-
 file="$SCREENSHOT_DIR/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png"
 
-if grim -g "$geometry" "$file"; then
-    wl-copy --type image/png < "$file"
-
-    notify-send \
-        "Screenshot" \
-        "Screenshot taken and saved to $file"
+if ~/.local/bin/grimblast --freeze copysave area "$file" >/dev/null 2>&1; then
+    notify-send "Screenshot" "Captura guardada en $file"
 else
     rm -f "$file"
-    notify-send \
-        "Screenshot" \
-        "Failed to capture screenshot"
     exit 1
 fi
