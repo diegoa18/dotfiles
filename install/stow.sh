@@ -7,26 +7,26 @@ SCRIPT_DIR="$(
     pwd -P
 )"
 
-# shellcheck source=lib/common.sh
 . "$SCRIPT_DIR/lib/common.sh"
 
 STOW_DIR="$DOTFILES_ROOT/home"
 
 STOW_PACKAGES=(
+    bat
     dunst
     ghostty
     git
     hypr
+    nautilus
     opencode
     quickshell
     rofi
     scripts
     waybar
-    zsh
+    xdg
+    zed
     zsh
 )
-
-
 
 main() {
     local package
@@ -44,8 +44,6 @@ main() {
             die "Stow package missing: $package"
     done
 
-    # Ensure common parent directories are real directories rather than
-    # allowing Stow to fold them into broad symlinks.
     mkdir -p \
         "$HOME/.config" \
         "$HOME/.local/bin"
@@ -72,12 +70,12 @@ main() {
         --target="$HOME" \
         "${STOW_PACKAGES[@]}"
 
+    log "Restoring Nautilus configuration"
+    if [ -r "$STOW_DIR/nautilus/nautilus-settings.ini" ]; then
+        dconf load /org/gnome/nautilus/ < "$STOW_DIR/nautilus/nautilus-settings.ini" || true
+    fi
+
     log "User configuration deployment complete"
 }
 
 main "$@"
-
-    log "Restoring Nautilus configuration"
-    if [ -r "$STOW_DIR/nautilus/nautilus-settings.ini" ]; then
-        dconf load /org/gnome/nautilus/ < "$STOW_DIR/nautilus/nautilus-settings.ini"
-    fi
