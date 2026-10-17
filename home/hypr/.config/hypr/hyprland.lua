@@ -219,17 +219,17 @@ hl.bind(
 
 hl.bind(
 	"XF86AudioPlay",
-	hl.dsp.exec_cmd("playerctl play-pause")
+	hl.dsp.exec_cmd("sh -c 'playerctl play-pause'")
 )
 
 hl.bind(
 	"XF86AudioNext",
-	hl.dsp.exec_cmd("playerctl next")
+	hl.dsp.exec_cmd("sh -c 'playerctl next'")
 )
 
 hl.bind(
 	"XF86AudioPrev",
-	hl.dsp.exec_cmd("playerctl previous")
+	hl.dsp.exec_cmd("sh -c 'playerctl previous'")
 )
 
 hl.bind(

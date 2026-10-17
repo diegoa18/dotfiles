@@ -41,14 +41,14 @@ WaybarPopup {
                     id: n.id?.data || 0,
                     appname: n.appname?.data || "System",
                     summary: n.summary?.data || "",
-                    body: (n.body?.data || "").replace(/<[^>]*>?/gm, ''), // Limpiar HTML
+                    body: (n.body?.data || "").replace(/<[^>]*>?/gm, ''),
                     timestamp: n.timestamp?.data || 0
                 })).filter(n => {
                     const app = n.appname.toLowerCase();
                     const sum = n.summary;
                     
-                    // 1. Ignorar reproductores multimedia
-                    if (app.includes("spotify") || app.includes("vlc") || app.includes("playerctl") || app.includes("mpv")) return false;
+                    // 1. Filtro Multimedia Universal (Atrapa Glassymusic, Spotify, VLC, etc.)
+                    if (app.includes("music") || app.includes("spotify") || app.includes("vlc") || app.includes("mpv") || app.includes("playerctl")) return false;
                     
                     // 2. Ignorar notificaciones utilitarias y efímeras
                     if (sum === "Wallpaper" || sum === "Screenshot" || sum === "Power profile") return false;
@@ -88,7 +88,6 @@ WaybarPopup {
             anchors.margins: 14
             spacing: 8
 
-            // Header
             Row {
                 width: parent.width
                 height: 32
