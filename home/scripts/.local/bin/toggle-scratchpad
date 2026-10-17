@@ -1,8 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-if hyprctl clients -j | grep -q "\"class\": \"ghostty-scratchpad\""; then
-    hyprctl dispatch togglespecialworkspace scratchpad
-else
-    hyprctl dispatch exec "[workspace special:scratchpad] ghostty --class=ghostty-scratchpad"
+# Si Ghostty no existe, lo lanzamos en segundo plano. 
+# La regla de hyprland.lua lo atrapará y lo enviará al scratchpad automáticamente.
+if ! hyprctl clients -j | grep -q '"class": "ghostty-scratchpad"'; then
+    ghostty --class=ghostty-scratchpad &
+    sleep 0.25
 fi
+
+# Le pasamos a hyprctl los argumentos formateados exactamente como Lua espera evaluarlos
+hyprctl dispatch "'togglespecialworkspace', 'scratchpad'"
