@@ -36,13 +36,25 @@ WaybarPopup {
             try {
                 const json = JSON.parse(historyCollector.text);
                 const notifs = json.data[0] || [];
+                
                 root.notifications = notifs.map(n => ({
                     id: n.id?.data || 0,
                     appname: n.appname?.data || "System",
                     summary: n.summary?.data || "",
-                    body: (n.body?.data || "").replace(/<[^>]*>?/gm, ''), // Limpiar HTML de Dunst
+                    body: (n.body?.data || "").replace(/<[^>]*>?/gm, ''), // Limpiar HTML
                     timestamp: n.timestamp?.data || 0
-                }));
+                })).filter(n => {
+                    const app = n.appname.toLowerCase();
+                    const sum = n.summary;
+                    
+                    // 1. Ignorar reproductores multimedia
+                    if (app.includes("spotify") || app.includes("vlc") || app.includes("playerctl") || app.includes("mpv")) return false;
+                    
+                    // 2. Ignorar notificaciones utilitarias y efímeras
+                    if (sum === "Wallpaper" || sum === "Screenshot" || sum === "Power profile") return false;
+                    
+                    return true;
+                });
             } catch(e) {}
             root.loading = false;
         }
