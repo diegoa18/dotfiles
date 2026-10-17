@@ -76,3 +76,8 @@ main() {
 }
 
 main "$@"
+
+    log "Restoring Nautilus configuration"
+    if [ -r "$STOW_DIR/nautilus/nautilus-settings.ini" ]; then
+        dconf load /org/gnome/nautilus/ < "$STOW_DIR/nautilus/nautilus-settings.ini"
+    fi
