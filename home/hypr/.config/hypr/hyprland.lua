@@ -411,7 +411,7 @@ hl.window_rule({
     size = "900 600",
 })
 
-hl.bind("SUPER + Return", hl.dsp.exec_cmd("~/.local/bin/toggle-scratchpad"))
+hl.bind("SUPER + SHIFT + T", hl.dsp.exec_cmd("~/.local/bin/toggle-scratchpad"))
 
 hl.window_rule({
     match = { class = "^ghostty-scratchpad$" },
