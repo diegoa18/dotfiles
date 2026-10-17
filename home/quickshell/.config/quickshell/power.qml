@@ -6,7 +6,7 @@ WaybarPopup {
     id: root
 
     preferredPopupWidth: 170
-    preferredPopupHeight: 188
+    preferredPopupHeight: 178
 
     color: "transparent"
 
