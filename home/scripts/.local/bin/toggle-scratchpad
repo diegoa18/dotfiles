@@ -1,12 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-# Si Ghostty no existe, lo lanzamos en segundo plano. 
-# La regla de hyprland.lua lo atrapará y lo enviará al scratchpad automáticamente.
-if ! hyprctl clients -j | grep -q '"class": "ghostty-scratchpad"'; then
-    ghostty --class=ghostty-scratchpad &
+# Verificamos si ya existe alguna ventana guardada en el scratchpad
+if hyprctl clients -j | grep -q 'special:scratchpad'; then
+    # Si existe, la mostramos/ocultamos como un interruptor
+    hyprctl dispatch "'togglespecialworkspace', 'scratchpad'"
+else
+    # Si no existe, forzamos a que nazca flotante, centrada y en el scratchpad directamente
+    hyprctl dispatch "'exec', '[workspace special:scratchpad; float; size 1000 650; center] ghostty'"
+    
+    # Pequeña pausa para que Wayland registre la ventana antes de desplegarla en pantalla
     sleep 0.25
+    hyprctl dispatch "'togglespecialworkspace', 'scratchpad'"
 fi
-
-# Le pasamos a hyprctl los argumentos formateados exactamente como Lua espera evaluarlos
-hyprctl dispatch "'togglespecialworkspace', 'scratchpad'"
