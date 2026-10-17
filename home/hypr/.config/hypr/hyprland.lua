@@ -218,6 +218,21 @@ hl.bind(
 )
 
 hl.bind(
+	"XF86AudioPlay",
+	hl.dsp.exec_cmd("playerctl play-pause")
+)
+
+hl.bind(
+	"XF86AudioNext",
+	hl.dsp.exec_cmd("playerctl next")
+)
+
+hl.bind(
+	"XF86AudioPrev",
+	hl.dsp.exec_cmd("playerctl previous")
+)
+
+hl.bind(
 	"XF86MonBrightnessUp",
 	hl.dsp.exec_cmd("~/.local/bin/brightness-osd up"),
 	{ repeating = true }
