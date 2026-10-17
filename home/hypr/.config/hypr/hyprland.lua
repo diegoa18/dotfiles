@@ -404,3 +404,8 @@ hl.window_rule({
 -- Mouse bindings para manipular ventanas flotantes libremente
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+hl.window_rule({
+    match = { class = "^xdg-desktop-portal-gtk$" },
+    size = "900 600",
+})
