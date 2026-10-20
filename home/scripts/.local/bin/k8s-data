@@ -1,0 +1,21 @@
+#!/bin/bash
+# Aseguramos entorno
+export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
+
+CTX=$(kubectl config current-context 2>/dev/null || echo "Ninguno")
+NS=$(kubectl config view --minify -o jsonpath='{..namespace}' 2>/dev/null)
+[ -z "$NS" ] && NS="default"
+
+echo "$CTX"
+echo "---"
+echo "$NS"
+echo "---"
+kubectl config get-contexts -o name 2>/dev/null || echo "$CTX"
+echo "---"
+
+# Corrección vital: Timeout de 2s. Si el clúster está offline, captura el error.
+kubectl get namespaces --request-timeout=2s -o custom-columns=:metadata.name --no-headers 2>/dev/null || echo "󰖪 Clúster Inaccesible"
+
+# Forzamos éxito para que Quickshell siempre renderice la vista
+exit 0
