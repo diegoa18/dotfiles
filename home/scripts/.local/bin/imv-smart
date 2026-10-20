@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Si se pasan múltiples archivos o no es exactamente 1 argumento, ejecutar imv directo
+if [ "$#" -ne 1 ]; then
+    exec imv "$@"
+fi
+
 FILE="$1"
 MAX_W=1200
 MAX_H=800
@@ -14,7 +19,14 @@ if ! command -v imv >/dev/null 2>&1; then
     fi
 fi
 
+# Detectar si es un GIF animado o archivo con múltiples capas para evitar bloqueos
 if [ -f "$FILE" ] && command -v identify >/dev/null 2>&1; then
+    # Si identify detecta más de una escena/fotograma, saltar redimensionamiento estático
+    NUM_FRAMES=$(identify -format "%n\n" "$FILE" 2>/dev/null | head -n 1)
+    if [ -n "$NUM_FRAMES" ] && [ "$NUM_FRAMES" -gt 1 ]; then
+        exec "$IMV_BIN" "$@"
+    fi
+
     DIM=$(identify -format "%w %h" "$FILE" 2>/dev/null)
     if [ -n "$DIM" ]; then
         IMG_W=$(echo "$DIM" | awk "{print \$1}")
