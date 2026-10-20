@@ -87,7 +87,7 @@ WaybarPopup {
                     font.pointSize: 12
                     font.bold: true
                     color: "#ffffff"
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.left: parent.left
                 }
 
                 Item { width: 1; height: 4 }
