@@ -1,0 +1,36 @@
+#!/bin/bash
+set -euo pipefail
+
+KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
+
+# Si no hay archivo de configuración, salimos silenciosamente (oculta el módulo en Waybar)
+if [ ! -f "$KUBECONFIG" ]; then
+    echo '{"text": "", "tooltip": "No kubeconfig found", "class": "disconnected"}'
+    exit 0
+fi
+
+# Extraer el contexto actual
+CTX=$(grep -m 1 'current-context:' "$KUBECONFIG" | awk '{print $2}' || true)
+
+if [ -z "$CTX" ]; then
+    echo '{"text": "󱃾 No Context", "tooltip": "No current context set", "class": "empty"}'
+    exit 0
+fi
+
+# Extraer el namespace de ese contexto (asume 'default' si no está explícito)
+NS=$(awk -v ctx="$CTX" '
+    $1 == "name:" && $2 == ctx { flag=1; next }
+    flag && $1 == "namespace:" { print $2; exit }
+    flag && $1 == "name:" { flag=0 }
+' "$KUBECONFIG" || true)
+
+NS=${NS:-default}
+
+# Limpiar comillas perdidas por si el yaml tiene formato estricto
+CTX=$(echo "$CTX" | tr -d '"' | tr -d "'")
+NS=$(echo "$NS" | tr -d '"' | tr -d "'")
+
+# Generar la salida JSON que Waybar espera
+cat <<JSON
+{"text": "󱃾 $CTX | $NS", "tooltip": "Cluster: $CTX\nNamespace: $NS", "class": "$CTX"}
+JSON
