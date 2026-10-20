@@ -107,10 +107,10 @@ WaybarPopup {
                     height: 28
                     Text {
                         width: parent.width - chargeText.width
-                        text: "Battery & power"
+                        text: "󰁹  Battery & power"
                         color: "#ffffff"
                         font.pixelSize: 15
-                        font.weight: Font.Medium
+                        font.bold: true
                         anchors.verticalCenter: parent.verticalCenter
                     }
                     Text {
@@ -118,7 +118,7 @@ WaybarPopup {
                         text: root.battery ? root.percentage + "%" : "—"
                         color: root.chargeColor
                         font.pixelSize: 24
-                        font.weight: Font.Medium
+                        font.bold: true
                     }
                 }
 
@@ -187,7 +187,7 @@ WaybarPopup {
                     Text {
                         text: "Power profile"
                         font.pixelSize: 13
-                        font.weight: Font.Medium
+                        font.bold: true
                         color: "#ffffff"
                     }
                     Repeater {
