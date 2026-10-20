@@ -27,6 +27,8 @@ window#waybar.floating {
 }
 
 #mpris,
+#custom-kubernetes,
+#tray,
 #pulseaudio,
 #network,
 #battery,

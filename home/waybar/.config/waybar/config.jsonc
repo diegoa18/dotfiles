@@ -85,15 +85,15 @@
   },
   "battery": {
     "format": "{icon} {capacity}%",
-    "format-charging": "<span font_family=\"Symbols Nerd Font\"></span> {capacity}%",
-    "format-plugged": "<span font_family=\"Symbols Nerd Font\"></span> {capacity}%",
-    "format-full": "<span font_family=\"Symbols Nerd Font\"></span> {capacity}%",
+    "format-charging": "<span font_family=\"Symbols Nerd Font\" rise=\"1800\"></span> {capacity}%",
+    "format-plugged": "<span font_family=\"Symbols Nerd Font\" rise=\"1800\"></span> {capacity}%",
+    "format-full": "<span font_family=\"Symbols Nerd Font\" rise=\"1800\"></span> {capacity}%",
     "format-icons": [
-      "<span font_family=\"Symbols Nerd Font\"></span>",
-      "<span font_family=\"Symbols Nerd Font\"></span>",
-      "<span font_family=\"Symbols Nerd Font\"></span>",
-      "<span font_family=\"Symbols Nerd Font\"></span>",
-      "<span font_family=\"Symbols Nerd Font\"></span>"
+      "<span font_family=\"Symbols Nerd Font\" rise=\"1800\"></span>",
+      "<span font_family=\"Symbols Nerd Font\" rise=\"1800\"></span>",
+      "<span font_family=\"Symbols Nerd Font\" rise=\"1800\"></span>",
+      "<span font_family=\"Symbols Nerd Font\" rise=\"1800\"></span>",
+      "<span font_family=\"Symbols Nerd Font\" rise=\"1800\"></span>"
     ],
     "tooltip-format": "{capacity}%\n{timeTo}\n{power:.1f} W",
     "on-click": "~/.local/bin/battery-popup",
@@ -137,7 +137,7 @@
     "exec": "~/.local/bin/k8s-context",
     "return-type": "json",
     "interval": 2,
-    "format": "{}",
+    "format": "<span rise=\"1500\">{}</span>",
     "on-click": "~/.local/bin/k8s-popup",
     "signal": 8
   }
