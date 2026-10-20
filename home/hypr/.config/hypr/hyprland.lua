@@ -420,3 +420,10 @@ hl.window_rule({
     center = true,
     workspace = "special:scratchpad",
 })
+
+hl.window_rule({
+    match = { class = "^imv$" },
+    animation = "none",
+    float = true,
+    center = true,
+})

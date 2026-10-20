@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+FILE="$1"
+MAX_W=1200
+MAX_H=800
+
+IMV_BIN="imv"
+if ! command -v imv >/dev/null 2>&1; then
+    if command -v imv-wayland >/dev/null 2>&1; then
+        IMV_BIN="imv-wayland"
+    else
+        echo "Error: No se encontró imv ni imv-wayland instalado."
+        exit 1
+    fi
+fi
+
+if [ -f "$FILE" ] && command -v identify >/dev/null 2>&1; then
+    DIM=$(identify -format "%w %h" "$FILE" 2>/dev/null)
+    if [ -n "$DIM" ]; then
+        IMG_W=$(echo "$DIM" | awk "{print \$1}")
+        IMG_H=$(echo "$DIM" | awk "{print \$2}")
+        
+        NEW_W=$IMG_W
+        NEW_H=$IMG_H
+
+        if [ "$NEW_W" -gt "$MAX_W" ]; then
+            NEW_W=$MAX_W
+            NEW_H=$(( IMG_H * MAX_W / IMG_W ))
+        fi
+
+        if [ "$NEW_H" -gt "$MAX_H" ]; then
+            NEW_H=$MAX_H
+            NEW_W=$(( IMG_W * MAX_H / IMG_H ))
+        fi
+        
+        "$IMV_BIN" "$@" &
+        PID=$!
+
+        for i in {1..30}; do
+            if hyprctl activewindow -j 2>/dev/null | grep -q "\"pid\": $PID"; then
+                hyprctl eval "hl.dispatch(hl.dsp.window.resize({x=${NEW_W}, y=${NEW_H}}))" >/dev/null
+                hyprctl eval "hl.dispatch(hl.dsp.window.center())" >/dev/null
+                break
+            fi
+            sleep 0.05
+        done
+        
+        wait $PID
+        exit 0
+    fi
+fi
+
+exec "$IMV_BIN" "$@"
