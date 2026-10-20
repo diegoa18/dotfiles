@@ -214,7 +214,7 @@ WaybarPopup {
                     Text {
                         width: parent.width - 80
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Network"
+                        text: "󰤨  Network"
                         color: "#ffffff"
                         font.pixelSize: 16
                         font.bold: true
