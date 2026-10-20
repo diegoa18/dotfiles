@@ -137,6 +137,8 @@
     "exec": "~/.local/bin/k8s-context",
     "return-type": "json",
     "interval": 2,
-    "format": "{}"
+    "format": "{}",
+    "on-click": "~/.local/bin/k8s-switch",
+    "signal": 8
   }
 }
