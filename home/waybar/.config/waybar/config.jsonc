@@ -12,8 +12,8 @@
     "clock"
   ],
   "modules-right": [
-    "tray",
     "custom/kubernetes",
+    "tray",
     "custom/brightness",
     "pulseaudio",
     "network",
