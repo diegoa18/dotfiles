@@ -32,5 +32,5 @@ NS=$(echo "$NS" | tr -d '"' | tr -d "'")
 
 # Generar la salida JSON que Waybar espera
 cat <<JSON
-{"text": "󱃾 $CTX | $NS", "tooltip": "Cluster: $CTX\nNamespace: $NS", "class": "$CTX"}
+{"text": "󱃾", "tooltip": "Cluster: $CTX\nNamespace: $NS", "class": "$CTX"}
 JSON

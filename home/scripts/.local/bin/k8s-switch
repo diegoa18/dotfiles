@@ -1,0 +1,21 @@
+#!/bin/bash
+set -euo pipefail
+
+# Extraemos la lista de contextos disponibles usando kubectl
+CONTEXTS=$(kubectl config get-contexts -o name)
+
+if [ -z "$CONTEXTS" ]; then
+    notify-send "Kubernetes" "No hay contextos configurados."
+    exit 1
+fi
+
+# Mostramos los contextos en Rofi para que el usuario seleccione
+SELECTED=$(echo "$CONTEXTS" | rofi -dmenu -i -p "󱃾 K8s Context")
+
+# Si el usuario seleccionó uno y no cerró Rofi
+if [ -n "$SELECTED" ]; then
+    kubectl config use-context "$SELECTED"
+    notify-send "Kubernetes" "Contexto cambiado a: $SELECTED"
+    # Forzamos la actualización inmediata del módulo en Waybar
+    pkill -RTMIN+8 waybar
+fi

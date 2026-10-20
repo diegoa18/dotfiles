@@ -13,6 +13,7 @@
   ],
   "modules-right": [
     "tray",
+    "custom/kubernetes",
     "custom/brightness",
     "pulseaudio",
     "network",
@@ -131,5 +132,11 @@
   "tray": {
     "icon-size": 18,
     "spacing": 10
+  },
+  "custom/kubernetes": {
+    "exec": "~/.local/bin/k8s-context",
+    "return-type": "json",
+    "interval": 2,
+    "format": "{}"
   }
 }
