@@ -138,7 +138,7 @@
     "return-type": "json",
     "interval": 2,
     "format": "{}",
-    "on-click": "~/.local/bin/k8s-switch",
+    "on-click": "~/.local/bin/k8s-popup",
     "signal": 8
   }
 }
