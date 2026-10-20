@@ -39,7 +39,7 @@ WaybarPopup {
             spacing: 16
 
             Text {
-                text: "Screen"
+                text: "󰃠  Screen"
                 color: "#ffffff"
                 font.pixelSize: 15
                 font.bold: true
