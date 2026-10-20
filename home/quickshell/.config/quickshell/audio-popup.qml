@@ -77,7 +77,7 @@ WaybarPopup {
                 AudioMixerRow {
                     id: outputControl
                     width: parent.width
-                    title: "Audio"
+                    title: "󰕾  Audio"
                     titlePixelSize: 15
                     nodes: root.sink ? [root.sink] : []
                     subtitle: root.sink

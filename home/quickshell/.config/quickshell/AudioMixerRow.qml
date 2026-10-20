@@ -42,7 +42,7 @@ Item {
             elide: Text.ElideRight
             color: "#ffffff"
             font.pixelSize: control.titlePixelSize
-            font.weight: Font.Medium
+            font.weight: Font.Bold
         }
 
         Row {
