@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+cd "$HOME" || exit 1
+
+# Detectar fd (fdfind en Debian) o usar find como respaldo
+if command -v fdfind >/dev/null 2>&1; then
+    FIND_CMD="fdfind . --exclude node_modules --exclude target --exclude __pycache__ --exclude .git"
+elif command -v fd >/dev/null 2>&1; then
+    FIND_CMD="fd . --exclude node_modules --exclude target --exclude __pycache__ --exclude .git"
+else
+    FIND_CMD="find . -not -path '*/.*' -not -path '*/node_modules*' - sed 's|^\./||'"
+fi
+
+# Mostrar en Rofi con formato ~/ruta y priorización fuzzy (fzf sorting)
+SELECTED=$(eval "$FIND_CMD" | sed "s|^|~/|" | rofi -dmenu -i -p "Files" -matching fuzzy -sort -sorting-method fzf -wayland-layer overlay)
+
+if [ -n "$SELECTED" ]; then
+    REAL_PATH="${SELECTED/#\~/$HOME}"
+    xdg-open "$REAL_PATH" >/dev/null 2>&1 &
+fi

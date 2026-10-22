@@ -53,7 +53,7 @@ hl.bind(
 )
 hl.bind(
 	"SUPER + SHIFT + SPACE",
-	hl.dsp.exec_cmd("rofi -show filebrowser -wayland-layer overlay")
+	hl.dsp.exec_cmd("~/.local/bin/rofi-file-search")
 )
 
 hl.on("hyprland.start", function()
