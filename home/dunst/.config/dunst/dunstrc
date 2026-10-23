@@ -45,9 +45,9 @@
 	progress_bar_max_width = 330
 	highlight = "#89b4fa"
 
-	mouse_left_click = close_current
+	mouse_left_click = do_action, close_current
 	mouse_middle_click = do_action
-	mouse_right_click = close_all
+    mouse_right_click = close_current
 
 [urgency_low]
 	timeout = 4
@@ -66,4 +66,3 @@
 	background = "#08080873"
 	foreground = "#ffffff"
 	frame_color = "#f38ba8"
-
